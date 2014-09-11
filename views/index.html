@@ -1,0 +1,81 @@
+<html>
+<head>
+<script src="/js/angular.js" charset="utf-8"></script>
+<script src="/js/underscore.js" charset="utf-8"></script>
+<script src="/js/transforms.js" charset="utf-8"></script>
+<script src="/js/formatDateFromTwitter.js" charset="utf-8"></script>
+<script src="/js/loremipsum.js" charset="utf-8"></script>
+<script src="/js/tweetcloud.js" charset="utf-8"></script>
+<script src="/js/ui-bootstrap-tpls-0.11.0.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $(".hastooltip").tooltip();   
+});
+</script>
+
+<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"></link>
+<style>
+button.cloud {}
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+</style>
+</head>
+
+<body data-ng-app="tweetcloud" data-ng-controller="cloud">
+<nav role="navigation" class="navbar navbar-default">
+	<div class="navbar-header">
+		<ul class="nav navbar-nav">
+			<li><a>{{ resultCount }}/{{ contentCount() }} tweets</a></li> 
+			<li><a>{{ transformCount() }} transformations</a></li>
+			<li><a><span class="label label-primary" ng-repeat="queryterm in query">{{queryterm}}<span></a></li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li><a>Buttons
+				<div class="btn-group">
+					<label class="btn btn-lg btn-default" data-ng-click="less()"
+							tooltip-placement="bottom" tooltip="Show fewer cloud buttons.">
+						<img src="glyphicons/png/glyphicons_433_minus.png" />
+					</label>
+					<label class="btn btn-lg btn-default" data-ng-click="more()"
+							tooltip-placement="bottom" tooltip="Show more cloud buttons.">
+						<img src="glyphicons/png/glyphicons_432_plus.png" />
+					</label>
+					<label class="btn btn-lg btn-default" data-ng-click="smaller()"
+							tooltip-placement="bottom" tooltip="Make cloud buttons smaller.">
+						<img src="glyphicons/png/glyphicons_115_text_smaller.png" />
+					</label>
+					<label class="btn btn-lg btn-default" data-ng-click="bigger()"
+							tooltip-placement="bottom" tooltip="Make cloud buttons bigger.">
+						<img src="glyphicons/png/glyphicons_116_text_bigger.png" />
+					</label>
+				</div></a>
+			</li>
+			<li><a>Content
+				<div class="btn-group">
+					<label class="btn btn-lg btn-default" data-ng-click="showTweets = !showTweets"
+							tooltip-placement="bottom" tooltip="Toggle display of matching tweets.">
+						<img src="glyphicons/png/glyphicons_158_show_lines.png" />
+					</label>
+					<label class="btn btn-lg btn-default" data-ng-click="initialize();"
+							tooltip-placement="bottom" tooltip="Refresh content.">
+						<img src="glyphicons/png/glyphicons_081_refresh.png" />
+					</label> <!-- Currently doesn't work because content is constant -->
+					<label class="btn btn-lg btn-default" data-ng-click="initialize()"
+							tooltip-placement="bottom" tooltip="Revert content.">
+						<img src="glyphicons/png/glyphicons_435_undo.png" />
+					</label>
+				</div></a>
+			</li>
+		</ul>
+	</div>
+</nav>
+<div class="tc" id="content">
+	<button class="cloud btn btn-default btn-xs" 
+		data-ng-repeat="wordspec in words" 
+		data-ng-click="addQueryTerm(wordspec.filter);buildCloud();filterContent();"
+		data-ng-style="wordspec.style"
+		>{{ wordspec.word }}</button>
+	<ul collapse="!showTweets"><li data-ng-repeat="tweet in matches">{{tweet}}</li></ul>
+</div>
+</body>
+</html>
