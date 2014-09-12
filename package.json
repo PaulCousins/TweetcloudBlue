@@ -1,10 +1,12 @@
 {
-	"name": "NodejsStarterApp",
-	"version": "0.0.1",
-	"description": "A sample nodejs app for Bluemix",
+	"name": "Tweetcloud",
+	"version": "0.1.0",
+	"description": "Builds an interactive word cloud from Twitter.",
 	"dependencies": {
 		"express": "3.4.7",
-		"jade": "1.1.4"
+		"ejs": "*",
+		"querystring": "0.2.0",
+		"twitter": "*"
 	},
 	"engines": {
 		"node": "0.10.26"

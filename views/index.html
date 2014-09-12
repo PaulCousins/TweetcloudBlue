@@ -69,7 +69,12 @@ button.cloud {}
 		</ul>
 	</div>
 </nav>
+<div class="login">
+<a href="/twauth">Log in with Twitter</a>
+<!-- TODO Once logged in, hide this button -->
+</div>
 <div class="tc" id="content">
+	<!-- TODO Hide the UI until the user is logged into Twitter. -->
 	<button class="cloud btn btn-default btn-xs" 
 		data-ng-repeat="wordspec in words" 
 		data-ng-click="addQueryTerm(wordspec.filter);buildCloud();filterContent();"

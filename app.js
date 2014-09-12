@@ -2,24 +2,29 @@
 
 // app.js
 // This file contains the server side JavaScript code for your application.
-// This sample application uses express as web application framework (http://expressjs.com/),
-// and jade as template engine (http://jade-lang.com/).
 
-var express = require('express');
-
-// setup middleware
-var app = express();
+var Express = require('express'),
+	Twitter = require('./public/js/twitter'), // returns singleton instance
+	Path = require('path'),
+	Routes = require('./route');
+	
+// Set up Express.
+var app = Express();
+// all environments
+app.set('port', process.env.PORT || 3000);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(Express.favicon());
+app.use(Express.logger('dev'));
+app.use(Express.bodyParser());
+app.use(Express.methodOverride());
 app.use(app.router);
-app.use(express.errorHandler());
-app.use(express.static(__dirname + '/public')); //setup static public directory
-app.set('view engine', 'jade');
-app.set('views', __dirname + '/views'); //optional since express defaults to CWD/views
+app.use(Express.static(Path.join(__dirname, 'public')));
 
-// render index page
-app.get('/', function(req, res){
-	res.render('index');
-});
-
+app.get('/login', Routes.login);
+app.get('/twauth', Twitter.login());
+app.get('/', Twitter.gatekeeper('/login'), Routes.index);	
+	
 // There are many useful environment variables available in process.env.
 // VCAP_APPLICATION contains useful information about a deployed application.
 var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
