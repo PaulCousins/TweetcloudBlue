@@ -23,7 +23,10 @@ app.use(Express.static(Path.join(__dirname, 'public')));
 
 app.get('/login', Routes.login);
 app.get('/twauth', Twitter.login());
-app.get('/', Twitter.gatekeeper('/login'), Routes.index);	
+app.get('/twitter', Twitter.gatekeeper('/login'), Routes.twitter);
+app.get('/loremipsum', Routes.loremipsum);
+//TODO app.get('/gettweets
+//TODO app.get('/cloudify	
 	
 // There are many useful environment variables available in process.env.
 // VCAP_APPLICATION contains useful information about a deployed application.

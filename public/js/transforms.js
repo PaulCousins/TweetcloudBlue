@@ -1,4 +1,12 @@
-var gaDefaultTransform = [
+//NOW Use basic transform to confirm that it works.
+//LATER Get the transforms from TweetcloudJS.com. (category t)
+module.exports = function() {
+
+	return {
+
+		data: [
+	
+// RegExp pattern to match, consolidation word, Twitter query
 ["\d\d?(hrs|mins)"],
 ["able"],
 ["about"],
@@ -36,8 +44,8 @@ var gaDefaultTransform = [
 ["also"],
 ["although"],
 ["always"],
-["amend.*","amend|amend.*"],
-["american?a?s?","america"],
+["amend.*","amend","amend OR amends OR amending OR amended OR amendment OR amendments"],
+["american?a?s?","america","america OR american OR americans OR americas"],
 ["among"],
 ["amount(s|ed|ing)?"],
 ["analy(sis|ses)"],
@@ -65,18 +73,18 @@ var gaDefaultTransform = [
 ["ask.*"],
 ["ass(es|hole|holes)?"],
 ["assum*."],
-["astroturf.*","astroturf"],
+["astroturf.*","astroturf OR astroturfing"],
 ["attack.*"],
 ["attempt.*"],
-["attorneys?|attys?|lawyers?","attorney/lawyer|"],
+["attorneys?|attys?|lawyers?","attorney OR attorneys OR atty OR attys lawyer OR lawyers"],
 ["avoid.*"],
 ["away"],
 ["b\/c"],
-["baby|babies","baby|baby+OR+babies"],
+["baby|babies","baby","baby+OR+babies"],
 ["back(s|ed|ing)?"],
 ["bad"],
-["ban(s|ned|ning)?","ban|ban+OR+bans+OR+banned+OR+banning"],
-["bank(s|ed|ing|er|ers)","bank"],
+["ban(s|ned|ning)?","ban","ban+OR+bans+OR+banned+OR+banning"],
+["bank(s|ed|ing|er|ers)","bank","bank OR banks OR banked OR banking OR banker OR bankers"],
 ["bar(s|red|ring)?"],
 ["beat(s|en)?"],
 ["because"],
@@ -97,11 +105,11 @@ var gaDefaultTransform = [
 ["bid(s|ded|ding)?"],
 ["big"],
 ["bigge(r|st)"],
-["bills","bill"],
+["bills?","bill","bill OR bills"],
 ["bits?"],
 ["bitch.*"],
-["blam.*","blame|blam.*"],
-["bless.*","bless"],
+["blam.*","blame","blame OR blames OR blamed OR blaming"],
+["bless.*","bless","bless OR blesses OR blessed OR blessing"],
 ["block.*"],
 ["bonanzle"],
 ["books?"],
@@ -117,11 +125,11 @@ var gaDefaultTransform = [
 ["buy.*"],
 ["call.*"],
 ["came"],
-["candidates","candidate"],
+["candidates?","candidate","candidate OR candidates"],
 ["can(not)?"],
 ["cancel.*"],
 ["car(es|ed|ing)"],
-["cars","car"],
+["cars?","car","car OR cars"],
 ["cases?"],
 ["catch(es|ing)?"],
 ["caught"],
@@ -650,6 +658,7 @@ var gaDefaultTransform = [
 ["serve[ds]?"],
 ["servi(ce|ng)"],
 ["sets?"],
+["several"],
 ["shall"],
 ["shar(e|es|ed|ing|ethis)"],
 ["she"],
@@ -842,9 +851,9 @@ var gaDefaultTransform = [
 ["well"],
 ["went"],
 ["were"],
-["what"],
-["when"],
-["where"],
+["what(so)?(ever)?"],
+["when(ever)?"],
+["where(of)?"],
 ["which"],
 ["while"],
 ["who"],
@@ -854,7 +863,7 @@ var gaDefaultTransform = [
 ["will"],
 ["win"],
 ["wingnuts?"],
-["winn.*"],
+["winning"],
 ["wins"],
 ["with"],
 ["without"],
@@ -885,4 +894,22 @@ var gaDefaultTransform = [
 ["yours?"],
 ["yoursel(f|ves)"],
 ["yrs","'"]
-];
+
+		],
+
+		mapToObject: function(pTransform) {
+			return { 
+				exp : new RegExp('^('+pTransform[0]+')$'), 
+				replacement : pTransform[1] ? pTransform[1] : '',
+				queryterm : pTransform[2] ? pTransform[2] : pTransform[0]
+			}; 
+		} 
+
+	//TODO Allow for injection of custom transforms.
+	//TODO for (var i in custom transform) {
+	//TODO 	returnValue.push(mapToObject(custom transform[i]));
+	//TODO );
+
+	}
+	
+} //function()
