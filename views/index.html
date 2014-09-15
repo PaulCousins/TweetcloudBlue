@@ -73,6 +73,7 @@ button.cloud {}
 		data-ng-hide="hideThis"
 		data-ng-click="addQueryTerm(wordspec.queryTerm);filterContent();"
 		data-ng-style="countToStyle(wordspec.count)"
+		tooltip-placement="bottom" tooltip="{{ wordspec.count }} instances"
 		>{{ word }}</button>
 	<ul collapse="!showStrings"><li data-ng-repeat="matchedString in matches">{{matchedString}}</li></ul>
 </div>
