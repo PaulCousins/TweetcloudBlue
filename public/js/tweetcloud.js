@@ -72,6 +72,7 @@ app.controller('cloudCtlr',
 		}).success( function(data) {
 			$scope.cloudified = data;
 			$scope.filterContent();
+			$scope.setInitialQuantityThreshold();
 		}).error( function(data) {
 			console.log("Failed to receive data from server."); //TODO Make this part of the UI.
 		});
@@ -108,20 +109,23 @@ app.controller('cloudCtlr',
 		$scope.downloadCloud(); // calls $scope.filterContent();
 	}
 	
-	$scope.setQuantityThreshold = function() {
-		// Based on median value of word counts.
+	$scope.setInitialQuantityThreshold = function() {
+		// Base on 75th percentile of values that are greater than 1.
+		
 		aCounts = [];
-		for (var i in $scope.cloudified) {
-			aCounts.push($scope.cloudified[i].count);
+		cloudData = $scope.getCloudData();
+		for (var i in cloudData) {
+			count = cloudData[i].count;
+			if (count>1) aCounts.push(count);
 		}
 		aCounts.sort();
 		n = aCounts.length;
 		
-		if (n%2) { // n is odd
-			$scope.quantityThreshold = (aCounts[(n-1)/2]);
-		} else { // n is even
-			$scope.quantityThreshold = (aCounts[n/2]+aCounts[n/2-1])/2;
+		$scope.quantityThreshold = 0;		
+		if (n>0) {
+			$scope.quantityThreshold = (aCounts[Math.floor(n*.75)]+aCounts[Math.ceil(n*.75)])/2;
 		}
+		console.log("setInitialQuantityThreshold",aCounts,$scope.quantityThreshold); 
 	}
 	
 	$scope.more = function() {
@@ -144,6 +148,8 @@ app.controller('cloudCtlr',
 		//DEP $scope.buildCloud();
 	}
 	
+	// This method really should be in the button controller.
+	// But then I would have to add a watch for basescale. Hmmm...
 	$scope.countToStyle = function(count) {
 		return { "font-size": ""+($scope.basescale+count*4)+"%" };
 	}
@@ -176,11 +182,22 @@ app.controller('cloudCtlr',
 
 app.controller('buttonCtlr', function ($scope) {
 
-	// Determine if current button should be hidden from view due to current quantity threshold.
-	$scope.hideThis = applyHideThis();
+//DEP console.log('buttonCtlr',$scope.wordspec.count,'<',$scope.quantityThreshold);
 
-	// Any time the quantity threshold changes, we may have to
-	// alter the visual exclusion of our button.
+	// Determine if current button should be hidden from view due to current quantity threshold.
+	$scope.hideThis = false;
+
+	// Apply the current quantity threshold filter to the wordspec controlled by this button.
+	function applyHideThis() {
+		$scope.hideThis = $scope.wordspec.count < $scope.quantityThreshold;
+	}
+
+	// Watchers: Things we need to watch lest they alter the properties of buttons:
+	//TODO - Query
+	//TODO - Cloud content.
+	// - Quantity threshold.
+	
+	// Changing quantity threshold can cause buttons to appear/disappear.
 	$scope.$watch(
 		"quantityThreshold",
 		function(newValue,oldValue) {
@@ -191,10 +208,8 @@ app.controller('buttonCtlr', function ($scope) {
 		}
 	);
 
-	// Apply the current quantity threshold filter to the wordspec controlled by this button.
-	function applyHideThis() {
-		$scope.hideThis = $scope.count < $scope.quantityThreshold;
-	}
+	// Set default state for each button.
+	applyHideThis();
 
 }); // controller 'buttonCtlr'
 
