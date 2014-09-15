@@ -19,11 +19,10 @@ module.exports = function(parameters) {
 		stringCount: parameters.data.length, // number of strings read
 		transformCount: oTransforms.data.length, // number of transforms read and applied
 		wordCount: 0, // will be set to total number of words counted.
-		words: [], // an ordered list of words that are keys to the cloud.
-		cloud: {}
+		cloud: {},
+		messages: [] // a structure for returning messages to the caller
 	}
 
-	var aWords = [];
 	var aWordCount = {};
 	var aQueryTerm = {};
 
@@ -51,33 +50,26 @@ module.exports = function(parameters) {
 			match &= extract.match(new RegExp(term));
 		}
 		if (match) {
-			
+
 			// Split words and build counting array.
 			extractWords = extract.split(' ');
 			for (var wordIndex in extractWords) {
 				word = extractWords[wordIndex];
 				if (word.length > 2) {
 					returnValue.wordCount++;
-					if (aWords.indexOf(word) > -1) {
-						aWordCount[word].count++;
-					} else {
-						aWords.push(word);
-						aWordCount[word] = 1;
-					}
+					aWordCount[word] = (aWordCount[word] || 0) + 1;
 				} //  if word length > 2
 			} // for word
 			
 		} // if filter match
 	} // for data
-	//DEP returnValue.log.push('aWordCount1',aWordCount.length);
 		
 	// Now that we have individual words, we need to apply the transforms 
 	// and reduce the list even further.
 	
 	aWordTransform = {};
 	
-	for (var index in aWords) {
-		word = aWords[index];
+	for (var word in aWordCount) {
 		for (trIndex in oTransforms.data) {
 			tr = oTransforms.mapToObject(oTransforms.data[trIndex]);
 			if (word.match(tr.exp)) {
@@ -89,8 +81,9 @@ module.exports = function(parameters) {
 
 	function encloud(word) {
 		count = aWordCount[word];
-		if (returnValue.words.indexOf(word) == -1) {
-			returnValue.words.push(word);
+		if (count === undefined) return;
+		if (count === 0) return;
+		if (returnValue.cloud[word] === undefined) {
 			returnValue.cloud[word] = {
 				'count': count,
 				'queryTerm': aQueryTerm[word] ? aQueryTerm[word] : word
@@ -101,8 +94,7 @@ module.exports = function(parameters) {
 	}
 	
 	// Final loop: Remove the zero words and make the actual cloud list.
-	for (var index in aWords) {
-		word = aWords[index];
+	for (var word in aWordCount) {
 		transform = aWordTransform[word];
 		if (transform) {
 			replacement = transform.replacement;
@@ -112,10 +104,8 @@ module.exports = function(parameters) {
 		} else {
 			encloud(word);
 		}
-		
 	}
 
-	returnValue.words.sort();
 	return returnValue;
 	
 }
