@@ -1,18 +1,8 @@
 <html>
 <head>
-<script src="/js/angular.js" charset="utf-8"></script>
-<script src="/js/underscore.js" charset="utf-8"></script>
-<script src="/js/transforms.js" charset="utf-8"></script>
-<script src="/js/formatDateFromTwitter.js" charset="utf-8"></script>
-<script src="/js/loremipsum.js" charset="utf-8"></script>
+<script src="/lib/angular.js" charset="utf-8"></script>
+<script src="/lib/ui-bootstrap-tpls-0.11.0.js" charset="utf-8"></script>
 <script src="/js/tweetcloud.js" charset="utf-8"></script>
-<script src="/js/ui-bootstrap-tpls-0.11.0.js" charset="utf-8"></script>
-
-<script type="text/javascript">
-$(document).ready(function(){
-    $(".hastooltip").tooltip();   
-});
-</script>
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"></link>
 <style>
@@ -21,12 +11,12 @@ button.cloud {}
 </style>
 </head>
 
-<body data-ng-app="tweetcloud" data-ng-controller="cloud">
+<body data-ng-app="tweetcloud" data-ng-controller="cloudCtlr">
 <nav role="navigation" class="navbar navbar-default">
 	<div class="navbar-header">
 		<ul class="nav navbar-nav">
-			<li><a>{{ resultCount }}/{{ contentCount() }} tweets</a></li> 
-			<li><a>{{ transformCount() }} transformations</a></li>
+			<li><a>{{ resultCount }}/{{ getStringCount() }} strings</a></li> 
+			<li><a>{{ getTransformCount() }} transformations</a></li>
 			<li><a><span class="label label-primary" ng-repeat="queryterm in query">{{queryterm}}<span></a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
@@ -34,53 +24,57 @@ button.cloud {}
 				<div class="btn-group">
 					<label class="btn btn-lg btn-default" data-ng-click="less()"
 							tooltip-placement="bottom" tooltip="Show fewer cloud buttons.">
-						<img src="glyphicons/png/glyphicons_433_minus.png" />
+						<img src="/glyphicons/png/glyphicons_433_minus.png" />
 					</label>
 					<label class="btn btn-lg btn-default" data-ng-click="more()"
 							tooltip-placement="bottom" tooltip="Show more cloud buttons.">
-						<img src="glyphicons/png/glyphicons_432_plus.png" />
+						<img src="/glyphicons/png/glyphicons_432_plus.png" />
 					</label>
 					<label class="btn btn-lg btn-default" data-ng-click="smaller()"
 							tooltip-placement="bottom" tooltip="Make cloud buttons smaller.">
-						<img src="glyphicons/png/glyphicons_115_text_smaller.png" />
+						<img src="/glyphicons/png/glyphicons_115_text_smaller.png" />
 					</label>
 					<label class="btn btn-lg btn-default" data-ng-click="bigger()"
 							tooltip-placement="bottom" tooltip="Make cloud buttons bigger.">
-						<img src="glyphicons/png/glyphicons_116_text_bigger.png" />
+						<img src="/glyphicons/png/glyphicons_116_text_bigger.png" />
 					</label>
 				</div></a>
 			</li>
 			<li><a>Content
 				<div class="btn-group">
-					<label class="btn btn-lg btn-default" data-ng-click="showTweets = !showTweets"
-							tooltip-placement="bottom" tooltip="Toggle display of matching tweets.">
-						<img src="glyphicons/png/glyphicons_158_show_lines.png" />
+					<label class="btn btn-lg btn-default" data-ng-click="showStrings = !showStrings"
+							tooltip-placement="bottom" tooltip="Toggle display of matching Strings.">
+						<img src="/glyphicons/png/glyphicons_158_show_lines.png" />
 					</label>
 					<label class="btn btn-lg btn-default" data-ng-click="initialize();"
 							tooltip-placement="bottom" tooltip="Refresh content.">
-						<img src="glyphicons/png/glyphicons_081_refresh.png" />
+						<img src="/glyphicons/png/glyphicons_081_refresh.png" />
 					</label> <!-- Currently doesn't work because content is constant -->
 					<label class="btn btn-lg btn-default" data-ng-click="initialize()"
 							tooltip-placement="bottom" tooltip="Revert content.">
-						<img src="glyphicons/png/glyphicons_435_undo.png" />
+						<img src="/glyphicons/png/glyphicons_435_undo.png" />
 					</label>
 				</div></a>
 			</li>
 		</ul>
 	</div>
 </nav>
-<div class="login">
+<!-- TODO Add a message bar for errors/info. -->
+<div class="login" data-ng-show="showTwitterLogin()">
 <a href="/twauth">Log in with Twitter</a>
 <!-- TODO Once logged in, hide this button -->
 </div>
 <div class="tc" id="content">
 	<!-- TODO Hide the UI until the user is logged into Twitter. -->
+	<!-- TODO Animate it. -->
 	<button class="cloud btn btn-default btn-xs" 
-		data-ng-repeat="wordspec in words" 
-		data-ng-click="addQueryTerm(wordspec.filter);buildCloud();filterContent();"
-		data-ng-style="wordspec.style"
-		>{{ wordspec.word }}</button>
-	<ul collapse="!showTweets"><li data-ng-repeat="tweet in matches">{{tweet}}</li></ul>
+		data-ng-controller="buttonCtlr"
+		data-ng-repeat="(word,wordspec) in getCloudData()" 
+		data-ng-hide="hideThis"
+		data-ng-click="addQueryTerm(wordspec.queryTerm);filterContent();"
+		data-ng-style="countToStyle(wordspec.count)"
+		>{{ word }}</button>
+	<ul collapse="!showStrings"><li data-ng-repeat="matchedString in matches">{{matchedString}}</li></ul>
 </div>
 </body>
 </html>

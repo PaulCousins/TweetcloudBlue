@@ -1,102 +1,83 @@
-// Page parameters
-var gsOriginalQuery = '{$q}'.replace(/\s+/g,'+').replace(/"/g,"%23");
-var gsQuery = []; //TODO Translate original query into an array
-var giThreshold = '{$threshold}'; if ((giThreshold == '') || (giThreshold[0] == '{')) giThreshold = 5;
-var giTweetCount = '{$tweetcount}'; if ((giTweetCount == '') || (giTweetCount[0] == '{')) giTweetCount = 40;
-var goFeedResult;
-var gsCustomTransform = "{$custom}"; if (gsCustomTransform[0] == '{') gsCustomTransform = '';
+//TODO var gsOriginalQuery = '{$q}'.replace(/\s+/g,'+').replace(/"/g,"%23");
+//TODO Abstract out data retrieval (which will differ between loremipsum and twitter) from UI.
 
-// ----------------------------------------------------------------------------------------------------
-
-function processText(s) {
-	s = s.toLowerCase();
-	s = s.replace(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/g,' '); // remove URLs
-	s = s.replace(/&amp;apos;/,'\'');
-	s = s.replace(/n\'t\b/g,' ');
-	s = s.replace(/\'s\b/g,' ');
-	s = s.replace(/s\'\b/g,' ');
-	s = s.replace(/[.,\/]/g,' '); // replace certain punctuation with spaces
-	s = s.replace(/\W\W+/g,' '); // coalesce white space and punctuation
-	//s = s.replace(/\b\w\w?\b/g,' '); // remove 1- and 2- letter words
-	return(s);
-}
-
-function processWord(pTransforms,pWord) {
-	if (pWord.length <= 2) return '';
-	_.each(pTransforms, function(tr) { pWord = pWord.replace(pFilter.exp,tr.rep); } );
-	return pWord;
-}
-
-function initializeFromTwitter()
-{/*
-    $("#query").html(gsQuery);
-    $("#content").html("Loading...");
-    var url;
-    if (gsQuery.match(/[/]/))
-    {
-     var a = gsQuery.split(/[/]/);
-     url = 'http://api.twitter.com/1/'+a[0]+'/lists/'+a[1]+'/statuses.atom?per_page=100';
-    }
-    else
-    {
-     var currentDate = new Date();
-     url = "http://search.twitter.com/search.atom?q="+gsQuery+"+-rt+-"+currentDate.getTime()+"&rpp=100&result_type=recent"
-    }
-
-    var feed = new google.feeds.Feed(url);
-    feed.includeHistoricalEntries();
-    feed.setNumEntries(100);
-    feed.load(processFeed);
-*/}
-
-// ----------------------------------------------------------------------------------------------------
-// Angular implementation.
 
 var app = angular.module('tweetcloud', ['ui.bootstrap']);
 
-app.controller('cloud', function ($scope) {
+app.controller('cloudCtlr', 
+	['$scope','$http','$location',
+		function ($scope,$http,$location) {
 
-	$scope.threshold = giThreshold;
-	$scope.basescale = 40;
-	$scope.tweetthreshold = 10;
+	var searchObject = $location.search();
+		// Valid query parameters (all optional)
+		//TEMP source: 'twitter'
+		//TODO query
+		//TODO qt: query threshold
+		//TODO scale: initial base scale
+		//TODO st: string threshold
+
+	$scope.quantityThreshold = 5; //TODO (searchObject) && (searchObject.qt) && (searchObject.qt is number)
+	$scope.basescale        = 40; //TODO (searchObject) && (searchObject.scale) && (searchObject.scale is number)
+	$scope.stringThreshold  = 10; //TODO (searchObject) && (searchObject.st) && (searchObject.st is number)
 	
-	$scope.showTweets = false;
-	// Transforms.
-
-	aCustomTransform = _.map(
-		eval(gsCustomTransform),  
-		function (pTransform) { 
-			return pTransform.length == 3 ? [pTransform[1],pTransform[0]+'|'+pTransform[2]] : null; 
-		} 
-	);
-
-	$scope.transforms = _.map(
-		gaDefaultTransform.concat(aCustomTransform), 
-		function (pTransform) {
-			return { 
-				exp : new RegExp('^('+pTransform[0]+')$'), 
-				rep : pTransform[1] ? pTransform[1] : '',
-				filter : pTransform[2] ? pTransform[2] : pTransform[0]
-			}; 
-		} 
-	);
-
-    $scope.transformCount = function() {
-		return _.size($scope.transforms);
+	//TEMP
+	$scope.dataRoute = "/loremipsum"; 
+	if ((searchObject) && (searchObject.source == "twitter")) {
+		$scope.dataRoute = "/twitter";
 	}
-
-	// Content.
-
-	// TODO when content added dynamically: $scope.content = [];	
-	$scope.content = loremipsum;
-	$scope.contentTextFunction = function(entity) {
-		return entity; // For now, content is an array of strings.
+	
+	$scope.getContent = function() {
+		if (!$scope.cloudified) return null;
+		return $scope.cloudified.data;
+	}
+	
+	// Total number of strings read by the data service.
+	$scope.getStringCount = function() {
+		if (!$scope.cloudified) return 0;
+		if (!$scope.cloudified.stringCount) return 0;
+		return $scope.cloudified.stringCount;
+	}
+	
+	// Number of transforms read and applied by the data service.
+	$scope.getTransformCount = function() {
+		if (!$scope.cloudified) return 0;
+		if (!$scope.cloudified.transformCount) return 0;
+		return $scope.cloudified.transformCount; 
+	}
+	
+	// Total number of words counted by the data service.
+	$scope.getWordCount = function() {
+		if (!$scope.cloudified) return 0;
+		if (!$scope.cloudified.wordCount) return 0;
+		return $scope.cloudified.wordCount;
+	}
+	
+	// An ordered list of words that are keys to the cloud.
+	$scope.getWords = function() {
+		if (!$scope.cloudified) return null;
+		return $scope.cloudified.words; 
+	}
+	
+	$scope.getCloudData = function() {
+		if (!$scope.cloudified) return null;
+		return $scope.cloudified.cloud;
+	}
+	
+	// Get data from server. 
+	// Assumes data returned will already be cloudified.
+	$scope.downloadCloud = function() {
+		$http({
+			method: 'GET',
+			url: $scope.dataRoute
+		}).success( function(data) {
+			$scope.cloudified = data;
+			$scope.filterContent();
+		}).error( function(data) {
+			console.log("Failed to receive data from server."); //TODO Make this part of the UI.
+		});
 	};
-	$scope.contentCount = function() {
-		return _.size($scope.content);
-	}
 
-	$scope.words = [];
+	$scope.showStrings = false;
 	
 	// Filter query.
 	
@@ -113,120 +94,107 @@ app.controller('cloud', function ($scope) {
 	$scope.queryToString = function() {
 		return $scope.query.join(' ');
 	}
+	
+	$scope.showTwitterLogin = function() {
+		return $scope.dataRoute == "/twitter";
+	}
 
 	// Interface functions.
 	
 	$scope.initialize = function()
 	{
-		$scope.query = gsQuery.slice(0); // clone default query
+		$scope.query = [];
 		$scope.words = [];
-		$scope.buildCloud();
-		$scope.filterContent();
+		$scope.downloadCloud(); // calls $scope.filterContent();
 	}
-
+	
+	$scope.setQuantityThreshold = function() {
+		// Based on median value of word counts.
+		aCounts = [];
+		for (var i in $scope.cloudified) {
+			aCounts.push($scope.cloudified[i].count);
+		}
+		aCounts.sort();
+		n = aCounts.length;
+		
+		if (n%2) { // n is odd
+			$scope.quantityThreshold = (aCounts[(n-1)/2]);
+		} else { // n is even
+			$scope.quantityThreshold = (aCounts[n/2]+aCounts[n/2-1])/2;
+		}
+	}
+	
 	$scope.more = function() {
-		$scope.threshold *= 1.5;
-		$scope.buildCloud();
+		$scope.quantityThreshold *= 1.5;
+		//DEP $scope.buildCloud();
 	}
 	
 	$scope.less = function() {
-		$scope.threshold /= 1.5;
-		$scope.buildCloud();
+		$scope.quantityThreshold /= 1.5;
+		//DEP $scope.buildCloud();
 	}
 	
 	$scope.bigger = function() {
 		$scope.basescale += 20;
-		$scope.buildCloud();
+		//DEP $scope.buildCloud();
 	}
 	
 	$scope.smaller = function() {
 		$scope.basescale -= 20;
-		$scope.buildCloud();
+		//DEP $scope.buildCloud();
 	}
 	
-	$scope.buildCloud =  function() {
-
-		$scope.words = [];
-
-		// Filter content according to the query.
-		var filteredContent = _.map(
-			$scope.content,
-			function(e) { return processText($scope.contentTextFunction(e)); }
-		);
-
-		_.each($scope.query, function(term) {
-			filteredContent = _.filter(filteredContent, function(s) {
-				return s.match(new RegExp(term));
-			});
-		});
-		
-		// Reduce all content to a single string to process.
-		var oWords = _.reduce(
-			filteredContent, 
-			function(a,entry) { 
-				entryarray = entry.split(' ');
-				a.push.apply(a,entryarray);
-				return a;
-			},
-			[]
-		);
-	
-		oWords.sort();
-		
-		var count = function (a,w) { 
-			if (w.length <= 2) return a;
-			w = _.reduce($scope.transforms, function(memo,filter) { return memo.replace(filter.exp,filter.rep); }, w); 
-			if (w!= '') { a[w] = (a[w] || 0) + 1; } 
-			return a;
-		};
-
-		// Generate word counts.
-		var oSums = _.reduce(oWords,count,[]);
-		iGrandTotal = 0;
-		iMaxFreq = -Infinity;
-		for (word in oSums) {
-			count = oSums[word];		
-			iGrandTotal += count;
-			if (iMaxFreq < count) { iMaxFreq = count; }
-		}
-
-		// Build the cloud.
-		// Size the words based on the frequency distribution.
-		for (oSum in oSums) {
-			var iFreq = oSums[oSum];
-			if ((iFreq*$scope.threshold) > (iMaxFreq || 0)) {
-				var wordArray = oSum.split('|')
-				var word = wordArray[0];
-				var filter = (wordArray.length == 2) ? wordArray[1] : word;
-
-				var scale = $scope.basescale + 4*iFreq;
-
-				$scope.words.push({
-					'word' : word,
-					'filter' : filter,
-					'style' : { "font-size": ""+scale+"%" }
-				});
-			}
-		} // for each sum
+	$scope.countToStyle = function(count) {
+		return { "font-size": ""+($scope.basescale+count*4)+"%" };
 	}
 	
 	$scope.matches = [];
 	$scope.resultCount = 0;
 	
 	$scope.filterContent = function() {
-		var filteredContent = $scope.content.slice(0);
-		_.each($scope.query, function(term) {
-			filteredContent = _.filter(filteredContent, function(s) {
-				return s.match(new RegExp(term,'gi'));
+		var filteredContent = [];
+		angular.forEach($scope.getContent(), function(contentString) {
+			match = true;
+			angular.forEach($scope.query, function(term) {
+				match &= contentString.match(new RegExp(term,'gi'));
 			});
+			if (match) {
+				filteredContent.push(contentString);
+			}
 		});
-		$scope.matches = filteredContent;
-		$scope.resultCount = _.size($scope.matches);
+		$scope.matches = angular.copy(filteredContent);
+		$scope.resultCount = $scope.matches.length;
 		
-		$scope.showTweets = ($scope.resultCount <= $scope.tweetthreshold);
+		$scope.showStrings = ($scope.resultCount <= $scope.stringThreshold);
 	}
 
 	$scope.initialize(); // do this by default
 
-}); // controller 'cloud'
+}]); // controller 'cloudCtlr'
+
+// Separate controller for the buttons themselves.	
+
+app.controller('buttonCtlr', function ($scope) {
+
+	// Determine if current button should be hidden from view due to current quantity threshold.
+	$scope.hideThis = applyHideThis();
+
+	// Any time the quantity threshold changes, we may have to
+	// alter the visual exclusion of our button.
+	$scope.$watch(
+		"quantityThreshold",
+		function(newValue,oldValue) {
+			if ( newValue === oldValue ) {
+				return;
+			}
+			applyHideThis();
+		}
+	);
+
+	// Apply the current quantity threshold filter to the wordspec controlled by this button.
+	function applyHideThis() {
+		$scope.hideThis = $scope.count < $scope.quantityThreshold;
+	}
+
+}); // controller 'buttonCtlr'
 

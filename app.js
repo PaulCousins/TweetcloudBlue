@@ -20,7 +20,9 @@ app.use(Express.bodyParser());
 app.use(Express.methodOverride());
 app.use(app.router);
 app.use(Express.static(Path.join(__dirname, 'public')));
+app.engine('html', require('ejs').renderFile);
 
+app.get('/', Routes.index);
 app.get('/login', Routes.login);
 app.get('/twauth', Twitter.login());
 app.get('/twitter', Twitter.gatekeeper('/login'), Routes.twitter);

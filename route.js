@@ -4,34 +4,37 @@ var Twitter = require('./public/js/twitter'), // returns singleton instance
 	Cloudify = require('./public/js/cloudify'),
 	LoremIpsum = require('./public/js/loremipsum');
 
-function toResponse(response,parameters) {
-	response.json(Cloudify(parameters));
+exports.index = function(req, res) {
+	res.render("index.html");
 }
 	
 exports.twitter = function(req, res){
 
-	// TEMP For now, get some tweets from search.
-	//TODO Move the Twitter get to a separate route, so the application can call it dynamically.
 	//TODO lang: 'en'
-	Twitter.search('obama', { count: 10 }, function(data) {
+	//TODO Get parameters from query string.
+	Twitter.search('obama', { count: 100 }, function(data) {
 		parameters = {
 			data: data.statuses,
 			textExtractFn: function(s) { return s.text; },
 			idExtractFn: function(s) { return s.id; }
 		};
-		toResponse(res,parameters);
+		cloudified = Cloudify(parameters);
+		cloudified.data = data.statuses;
+		res.json(cloudified);
 	});
 }
 
 exports.loremipsum = function(req, res){
 
+	content = LoremIpsum();
 	parameters = {
-		data: LoremIpsum(),
+		data: content,
 		textExtractFn: function(s) { return s; },
 		idExtractFn: function(s) { return s; }
 	};
-	toResponse(res,parameters);
-
+	cloudified = Cloudify(parameters);
+	cloudified.data = content;
+	res.json(cloudified);
 }
 
 exports.login = function(req, res){
