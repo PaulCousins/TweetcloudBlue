@@ -60,7 +60,9 @@ button.cloud {}
 		</ul>
 	</div>
 </nav>
-<!-- TODO Add a message bar for errors/info. -->
+<div data-ng-controller="alertCtlr">
+	<alert ng-repeat="alert in getAlerts()" type="{{alert.type}}" close="closeAlert($index)">{{alert.message}}</alert>
+</div>
 <div class="tc" id="content">
 	<!-- TODO Hide the UI until the user is logged into Twitter. -->
 	<!-- TODO Animate it. -->

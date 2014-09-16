@@ -2,9 +2,38 @@
 
 var app = angular.module('tweetcloud', ['ui.bootstrap']);
 
+app.factory('alertService', function() {
+
+	// [ { type: "danger"|"success"|"info"|etc., message: "" } ]
+	var alerts = [];
+
+	return {
+	
+		getAlerts: function() {
+			return alerts;
+		},
+	
+		addAlert: function(type,message) {
+			alerts.push({'type': type, 'message': message});
+		},
+
+		closeAlert: function(index) {
+			alerts.splice(index, 1);
+		}
+		
+	};
+});
+
+// Message box controller.
+app.controller('alertCtlr', ['$scope','alertService', function ($scope,alertService) {
+	$scope.getAlerts =  alertService.getAlerts;
+	$scope.addAlert = alertService.addAlert;
+	$scope.closeAlert = alertService.closeAlert;
+}]);
+
 app.controller('cloudCtlr', 
-	['$scope','$http','$location',
-		function ($scope,$http,$location) {
+	['$scope','$http','$location','alertService',
+		function ($scope,$http,$location,alertService) {
 		
 	$scope.sources = {
 		'loremipsum': { 'title': "U.S. Constitution", 'dataRoute': '/loremipsum' },
@@ -76,14 +105,16 @@ app.controller('cloudCtlr',
 		postData = {
 			'query': $scope.getQueryAsString()
 		};
+		alertService.addAlert("info","Retrieving data.");
 		$http
 			.post($scope.source.dataRoute,postData)
 			.success( function(data) {
+				alertService.addAlert("info","Data retrieved; formatting data.");
 				$scope.cloudified = data;
 				$scope.filterContent();
 				$scope.setInitialQuantityThreshold();
 			}).error( function(data) {
-				console.log("Failed to receive data from server."); //TODO Make this part of the UI.
+				alertService.addAlert("danger","Failed to receive data from server."); 
 			});
 	};
 
