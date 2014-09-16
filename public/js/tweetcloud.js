@@ -9,14 +9,13 @@ app.controller('cloudCtlr',
 		function ($scope,$http,$location) {
 
 	var searchObject = $location.search();
+	console.log(searchObject);
 		// Valid query parameters (all optional)
 		//TEMP source: 'twitter'
 		//TODO query
-		//TODO qt: query threshold
 		//TODO scale: initial base scale
 		//TODO st: string threshold
 
-	$scope.quantityThreshold = 5; //TODO (searchObject) && (searchObject.qt) && (searchObject.qt is number)
 	$scope.basescale        = 40; //TODO (searchObject) && (searchObject.scale) && (searchObject.scale is number)
 	$scope.stringThreshold  = 10; //TODO (searchObject) && (searchObject.st) && (searchObject.st is number)
 	
@@ -28,7 +27,7 @@ app.controller('cloudCtlr',
 	
 	$scope.getContent = function() {
 		if (!$scope.cloudified) return null;
-		return $scope.cloudified.data;
+		return $scope.cloudified.extract;
 	}
 	
 	// Total number of strings read by the data service.
@@ -55,7 +54,9 @@ app.controller('cloudCtlr',
 	// An ordered list of words that are keys to the cloud.
 	$scope.getWords = function() {
 		if (!$scope.cloudified) return null;
-		return $scope.cloudified.words; 
+		words = $scope.cloudify.cloud.reduce(function(a,word) { a.push(word); }, {});
+		words.sort();
+		return words; 
 	}
 	
 	$scope.getCloudData = function() {
@@ -66,45 +67,55 @@ app.controller('cloudCtlr',
 	// Get data from server. 
 	// Assumes data returned will already be cloudified.
 	$scope.downloadCloud = function() {
-		$http({
-			method: 'GET',
-			url: $scope.dataRoute
-		}).success( function(data) {
-			$scope.cloudified = data;
-			$scope.filterContent();
-			$scope.setInitialQuantityThreshold();
-		}).error( function(data) {
-			console.log("Failed to receive data from server."); //TODO Make this part of the UI.
-		});
+		postData = {
+			'query': $scope.getQueryAsString()
+		};
+		$http
+			.post($scope.dataRoute,postData)
+			.success( function(data) {
+				//DEP console.log('cloudified',data);
+				$scope.cloudified = data;
+				$scope.filterContent();
+				$scope.setInitialQuantityThreshold();
+			}).error( function(data) {
+				console.log("Failed to receive data from server."); //TODO Make this part of the UI.
+			});
 	};
 
 	$scope.showStrings = false;
 	
 	// Filter query.
 	
-	$scope.query = [];
-	
+	$scope.getQueryAsString = function() {
+		if ($location.search()) {
+			return $location.search().q;
+		} else {
+			return '';
+		}
+	}
+
+	$scope.getQueryAsArray = function() {
+		if ($location.search()) {
+			return $location.search().q.split(' ');
+		} else {
+			return [];
+		}
+	}
+
 	$scope.addQueryTerm = function(term) {
-		$scope.query.push(term);
+		$location.search().q += " "+term;
+		$scope.downloadCloud();
 	}
 	
 	$scope.resetQuery = function() {
-		$scope.query = [];
+		$location.search().q = '';
+		$scope.downloadCloud();
 	}
 	
-	$scope.queryToString = function() {
-		return $scope.query.join(' ');
-	}
-	
-	$scope.showTwitterLogin = function() {
-		return $scope.dataRoute == "/twitter";
-	}
-
 	// Interface functions.
 	
 	$scope.initialize = function()
 	{
-		$scope.query = [];
 		$scope.words = [];
 		$scope.downloadCloud(); // calls $scope.filterContent();
 	}
@@ -125,16 +136,15 @@ app.controller('cloudCtlr',
 		if (n>0) {
 			$scope.quantityThreshold = (aCounts[Math.floor(n*.75)]+aCounts[Math.ceil(n*.75)])/2;
 		}
-		console.log("setInitialQuantityThreshold",aCounts,$scope.quantityThreshold); 
 	}
 	
 	$scope.more = function() {
-		$scope.quantityThreshold *= 1.5;
+		$scope.quantityThreshold /= 1.5;
 		//DEP $scope.buildCloud();
 	}
 	
 	$scope.less = function() {
-		$scope.quantityThreshold /= 1.5;
+		$scope.quantityThreshold *= 1.5;
 		//DEP $scope.buildCloud();
 	}
 	
@@ -158,20 +168,13 @@ app.controller('cloudCtlr',
 	$scope.resultCount = 0;
 	
 	$scope.filterContent = function() {
-		var filteredContent = [];
-		angular.forEach($scope.getContent(), function(contentString) {
-			match = true;
-			angular.forEach($scope.query, function(term) {
-				match &= contentString.match(new RegExp(term,'gi'));
-			});
-			if (match) {
-				filteredContent.push(contentString);
-			}
-		});
-		$scope.matches = angular.copy(filteredContent);
+		$scope.matches = angular.copy($scope.getContent());
 		$scope.resultCount = $scope.matches.length;
-		
 		$scope.showStrings = ($scope.resultCount <= $scope.stringThreshold);
+	}
+
+	$scope.showTwitterLogin = function() {
+		return $scope.dataRoute == "/twitter";
 	}
 
 	$scope.initialize(); // do this by default

@@ -26,7 +26,7 @@ app.get('/', Routes.index);
 app.get('/login', Routes.login);
 app.get('/twauth', Twitter.login());
 app.get('/twitter', Twitter.gatekeeper('/login'), Routes.twitter);
-app.get('/loremipsum', Routes.loremipsum);
+app.post('/loremipsum', Routes.loremipsum);
 //TODO app.get('/gettweets
 //TODO app.get('/cloudify	
 	

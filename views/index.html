@@ -17,7 +17,7 @@ button.cloud {}
 		<ul class="nav navbar-nav">
 			<li><a>{{ resultCount }}/{{ getStringCount() }} strings</a></li> 
 			<li><a>{{ getTransformCount() }} transformations</a></li>
-			<li><a><span class="label label-primary" ng-repeat="queryterm in query">{{queryterm}}<span></a></li>
+			<li><a><span class="label label-primary" ng-repeat="queryterm in getQueryAsArray()">{{queryterm}}<span></a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
 			<li><a>Buttons

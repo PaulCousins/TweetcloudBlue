@@ -16,6 +16,7 @@ module.exports = function(parameters) {
 	var oTransforms = Transforms(); // get once
 
 	var returnValue = {
+		extract: [],
 		stringCount: parameters.data.length, // number of strings read
 		transformCount: oTransforms.data.length, // number of transforms read and applied
 		wordCount: 0, // will be set to total number of words counted.
@@ -46,10 +47,11 @@ module.exports = function(parameters) {
 		// Filter extract according to the query (if performing query matching here).
 		match = true;
 		for (var queryIndex in parameters.query) {
-			term = parameters.query[queryIndex];
-			match &= extract.match(new RegExp(term));
+			exp = new RegExp(parameters.query[queryIndex]);
+			match &= exp.test(extract);
 		}
 		if (match) {
+			returnValue.extract.push(parameters.data[dataIndex]);
 
 			// Split words and build counting array.
 			extractWords = extract.split(' ');
@@ -106,6 +108,7 @@ module.exports = function(parameters) {
 		}
 	}
 
+	console.log(returnValue.extract);
 	return returnValue;
 	
 }

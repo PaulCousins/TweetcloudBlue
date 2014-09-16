@@ -26,15 +26,29 @@ exports.twitter = function(req, res){
 
 exports.loremipsum = function(req, res){
 
+	//console.log("ENTER exports.loremipsum");
+	s = "the congress of the united states";
+	console.log(s.match(/congress/g));
+
+	queryString = req.param("query");
+	if (queryString) {
+		queryArray = queryString.split(' ');
+	} else {
+		queryArray = [];
+	}
+
 	content = LoremIpsum();
 	parameters = {
 		data: content,
+		query: queryArray,
 		textExtractFn: function(s) { return s; },
 		idExtractFn: function(s) { return s; }
 	};
 	cloudified = Cloudify(parameters);
 	cloudified.data = content;
 	res.json(cloudified);
+
+	//console.log("EXIT exports.loremipsum");
 }
 
 exports.login = function(req, res){
