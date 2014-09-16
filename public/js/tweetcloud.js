@@ -1,6 +1,4 @@
-//TODO var gsOriginalQuery = '{$q}'.replace(/\s+/g,'+').replace(/"/g,"%23");
 //TODO Abstract out data retrieval (which will differ between loremipsum and twitter) from UI.
-
 
 var app = angular.module('tweetcloud', ['ui.bootstrap']);
 
@@ -73,7 +71,6 @@ app.controller('cloudCtlr',
 		$http
 			.post($scope.dataRoute,postData)
 			.success( function(data) {
-				//DEP console.log('cloudified',data);
 				$scope.cloudified = data;
 				$scope.filterContent();
 				$scope.setInitialQuantityThreshold();
@@ -140,22 +137,18 @@ app.controller('cloudCtlr',
 	
 	$scope.more = function() {
 		$scope.quantityThreshold /= 1.5;
-		//DEP $scope.buildCloud();
 	}
 	
 	$scope.less = function() {
 		$scope.quantityThreshold *= 1.5;
-		//DEP $scope.buildCloud();
 	}
 	
 	$scope.bigger = function() {
 		$scope.basescale += 20;
-		//DEP $scope.buildCloud();
 	}
 	
 	$scope.smaller = function() {
 		$scope.basescale -= 20;
-		//DEP $scope.buildCloud();
 	}
 	
 	// This method really should be in the button controller.
@@ -184,8 +177,6 @@ app.controller('cloudCtlr',
 // Separate controller for the buttons themselves.	
 
 app.controller('buttonCtlr', function ($scope) {
-
-//DEP console.log('buttonCtlr',$scope.wordspec.count,'<',$scope.quantityThreshold);
 
 	// Determine if current button should be hidden from view due to current quantity threshold.
 	$scope.hideThis = false;

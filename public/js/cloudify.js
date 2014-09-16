@@ -108,7 +108,6 @@ module.exports = function(parameters) {
 		}
 	}
 
-	console.log(returnValue.extract);
 	return returnValue;
 	
 }
