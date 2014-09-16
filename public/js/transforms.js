@@ -8,7 +8,7 @@ module.exports = function() {
 	
 // RegExp pattern to match, consolidation word, Twitter query
 ["\d\d?(hrs|mins)"],
-["able"],
+["abl[ey]"],
 ["about"],
 ["above"],
 ["absolute(ly)?"],
@@ -145,6 +145,7 @@ module.exports = function() {
 ["chang(e|es|ed|ing)"],
 ["check.*"],
 ["choices?|chooses?|chosen?|chosing"],
+["christian(s|ity)?","christian","christian OR christians OR christianity"],
 ["citizens?"],
 ["cities"],
 ["city"],
@@ -174,7 +175,7 @@ module.exports = function() {
 ["courts","court"],
 ["cover.*"],
 ["creat(e|es|ed|ing|ive|ively)"],
-["crim(es|inal|inals|inally)","crime"],
+["crim(es|inal|inals|inally)","crime","crime OR crimes OR criminal OR criminals OR crimnally"],
 ["cuando"],
 ["cunts?"],
 ["current(ly)?"],
@@ -195,6 +196,7 @@ module.exports = function() {
 ["(un)?defeat(s|ed|ing)"],
 ["defen(d|ds|ded|ding|[cs]e(s|less)?)","defense"],
 ["del"],
+["deny|denies|denied|denying|denials?|deniers?","deny","deny OR denies OR denied OR denying OR denial OR denials OR denier OR deniers"],
 ["depend(s|ed|ing)?"],
 ["(un)?deserv.*"],
 ["despite"],
@@ -381,6 +383,7 @@ module.exports = function() {
 ["its"],
 ["it\W.*"],
 ["(ja)+"],
+["(gov)?(bobby)?jindal","BobbyJindal","jindal OR bobbyjindal OR govjindal"],
 ["jobs?"],
 ["join(s|ed|ing|t|ts)?"],
 ["judg(e|es|ed|ing|e?ments?)","judge"],
@@ -500,6 +503,7 @@ module.exports = function() {
 ["nor"],
 ["nos"],
 ["now"],
+["(barack)?obama",'BarackObama','obama OR barackobama OR bho OR potus'],
 ["object.*","object"],
 ["off"],
 ["offices","office"],
@@ -596,6 +600,7 @@ module.exports = function() {
 ["reasons?"],
 ["receiv(e.*|ing)"],
 ["recent"],
+["recogniz.*","recognize"],
 ["recommend.*"],
 ["record(s|ed|ing)?"],
 ["regarding"],
@@ -885,8 +890,7 @@ module.exports = function() {
 		mapToObject: function(pTransform) {
 			return { 
 				exp : new RegExp('^('+pTransform[0]+')$'), 
-				replacement : pTransform[1] ? pTransform[1] : '',
-				queryterm : pTransform[2] ? pTransform[2] : pTransform[0]
+				replacement : pTransform[1] ? pTransform[1] : ''
 			}; 
 		} 
 
