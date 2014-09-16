@@ -25,10 +25,8 @@ app.engine('html', require('ejs').renderFile);
 app.get('/', Routes.index);
 app.get('/login', Routes.login);
 app.get('/twauth', Twitter.login());
-app.get('/twitter', Twitter.gatekeeper('/login'), Routes.twitter);
+app.post('/twitter', Twitter.gatekeeper('/login'), Routes.twitter);
 app.post('/loremipsum', Routes.loremipsum);
-//TODO app.get('/gettweets
-//TODO app.get('/cloudify	
 	
 // There are many useful environment variables available in process.env.
 // VCAP_APPLICATION contains useful information about a deployed application.

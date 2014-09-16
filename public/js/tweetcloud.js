@@ -5,11 +5,15 @@ var app = angular.module('tweetcloud', ['ui.bootstrap']);
 app.controller('cloudCtlr', 
 	['$scope','$http','$location',
 		function ($scope,$http,$location) {
+		
+	$scope.sources = {
+		'loremipsum': { 'title': "U.S. Constitution", 'dataRoute': '/loremipsum' },
+		'twitter': { 'title': "Twitter", 'dataRoute' : '/twitter' }
+	};
 
 	var searchObject = $location.search();
 	console.log(searchObject);
 		// Valid query parameters (all optional)
-		//TEMP source: 'twitter'
 		//TODO query
 		//TODO scale: initial base scale
 		//TODO st: string threshold
@@ -17,11 +21,15 @@ app.controller('cloudCtlr',
 	$scope.basescale        = 40; //TODO (searchObject) && (searchObject.scale) && (searchObject.scale is number)
 	$scope.stringThreshold  = 10; //TODO (searchObject) && (searchObject.st) && (searchObject.st is number)
 	
-	//TEMP
-	$scope.dataRoute = "/loremipsum"; 
-	if ((searchObject) && (searchObject.source == "twitter")) {
-		$scope.dataRoute = "/twitter";
+	$scope.isCurrentSource = function(slug) {
+		searchObject.source = slug;
 	}
+	
+	$scope.setSource = function(slug) {
+		searchObject.source = slug;
+	}
+	
+	$scope.source = $scope.sources[searchObject.source];
 	
 	$scope.getContent = function() {
 		if (!$scope.cloudified) return null;
@@ -69,7 +77,7 @@ app.controller('cloudCtlr',
 			'query': $scope.getQueryAsString()
 		};
 		$http
-			.post($scope.dataRoute,postData)
+			.post($scope.source.dataRoute,postData)
 			.success( function(data) {
 				$scope.cloudified = data;
 				$scope.filterContent();
@@ -167,7 +175,7 @@ app.controller('cloudCtlr',
 	}
 
 	$scope.showTwitterLogin = function() {
-		return $scope.dataRoute == "/twitter";
+		return searchObject.source == "twitter"; //TODO and not already logged in.
 	}
 
 	$scope.initialize(); // do this by default

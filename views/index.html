@@ -15,8 +15,9 @@ button.cloud {}
 <nav role="navigation" class="navbar navbar-default">
 	<div class="navbar-header">
 		<ul class="nav navbar-nav">
-			<li><a>{{ resultCount }}/{{ getStringCount() }} strings</a></li> 
+			<li><a>{{ resultCount }}/{{ getStringCount() }} strings</a></li>
 			<li><a>{{ getTransformCount() }} transformations</a></li>
+			<li class="login" data-ng-show="showTwitterLogin()"><a href="/twauth">Log in with Twitter</a></li>
 			<li><a><span class="label label-primary" ng-repeat="queryterm in getQueryAsArray()">{{queryterm}}<span></a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
@@ -60,10 +61,6 @@ button.cloud {}
 	</div>
 </nav>
 <!-- TODO Add a message bar for errors/info. -->
-<div class="login" data-ng-show="showTwitterLogin()">
-<a href="/twauth">Log in with Twitter</a>
-<!-- TODO Once logged in, hide this button -->
-</div>
 <div class="tc" id="content">
 	<!-- TODO Hide the UI until the user is logged into Twitter. -->
 	<!-- TODO Animate it. -->

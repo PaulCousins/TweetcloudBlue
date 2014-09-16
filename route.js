@@ -11,8 +11,10 @@ exports.index = function(req, res) {
 exports.twitter = function(req, res){
 
 	//TODO lang: 'en'
-	//TODO Get parameters from query string.
-	Twitter.search('obama', { count: 100 }, function(data) {
+
+	queryString = req.param("query");
+
+	Twitter.search(queryString, { count: 100 }, function(data) {
 		parameters = {
 			data: data.statuses,
 			textExtractFn: function(s) { return s.text; },
@@ -25,10 +27,6 @@ exports.twitter = function(req, res){
 }
 
 exports.loremipsum = function(req, res){
-
-	//console.log("ENTER exports.loremipsum");
-	s = "the congress of the united states";
-	console.log(s.match(/congress/g));
 
 	queryString = req.param("query");
 	if (queryString) {
@@ -47,8 +45,6 @@ exports.loremipsum = function(req, res){
 	cloudified = Cloudify(parameters);
 	cloudified.data = content;
 	res.json(cloudified);
-
-	//console.log("EXIT exports.loremipsum");
 }
 
 exports.login = function(req, res){
