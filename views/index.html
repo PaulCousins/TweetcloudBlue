@@ -15,6 +15,8 @@ button.cloud {}
 <nav role="navigation" class="navbar navbar-default">
 	<div class="navbar-header">
 		<ul class="nav navbar-nav">
+			<li><a tooltip-placement="bottom" tooltip="Source of this data.">{{ source.title }} 
+				<span class="caret"></span></a>			
 			<li><a>{{ resultCount }}/{{ getStringCount() }} strings</a></li>
 			<li><a>{{ getTransformCount() }} transformations</a></li>
 			<li class="login" data-ng-show="showTwitterLogin()"><a href="/twauth">Log in with Twitter</a></li>
