@@ -131,11 +131,9 @@ app.controller('cloudCtlr',
 	}
 
 	$scope.getQueryAsArray = function() {
-		if ($location.search()) {
-			return $location.search().q.split(' ');
-		} else {
-			return [];
-		}
+		if (!$location.search()) { return []; }
+		if (!$location.search().q) { return []; }				
+		return $location.search().q.split(' ');
 	}
 
 	$scope.addQueryTerm = function(term) {
