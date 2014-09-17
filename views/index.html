@@ -2,7 +2,24 @@
 <head>
 <script src="/lib/angular.js" charset="utf-8"></script>
 <script src="/lib/ui-bootstrap-tpls-0.11.0.js" charset="utf-8"></script>
-<script src="/js/tweetcloud.js" charset="utf-8"></script>
+<script src="/js/alertController.js" charset="utf-8"></script>
+<script src="/js/alertService.js" charset="utf-8"></script>
+<script src="/js/buttonController.js" charset="utf-8"></script>
+<script src="/js/cloudController.js" charset="utf-8"></script>
+<script src="/js/cloudService.js" charset="utf-8"></script>
+<script src="/js/dataSourceService.js" charset="utf-8"></script>
+<script>
+	var app = angular.module('tweetcloud', ['ui.bootstrap']);
+	app.service('alertService', AlertService);
+	app.service('cloudService', CloudService);
+	app.service('dataSourceService', DataSourceService);
+	app.controller('alertController', ['$scope','alertService',AlertController]);
+	app.controller('buttonController', ButtonController);
+	app.controller('cloudController', 
+		['$scope','$http','$location',
+		'alertService','cloudService','dataSourceService',
+		CloudController]);
+</script>
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"></link>
 <style>
@@ -11,18 +28,33 @@ button.cloud {}
 </style>
 </head>
 
-<body data-ng-app="tweetcloud" data-ng-controller="cloudCtlr">
+<body data-ng-app="tweetcloud" data-ng-controller="cloudController">
 <nav role="navigation" class="navbar navbar-default">
 	<div class="navbar-header">
 		<ul class="nav navbar-nav">
-			<li><a tooltip-placement="bottom" tooltip="Source of this data.">{{ source.title }} 
-				<span class="caret"></span></a>			
-			<li><a>{{ resultCount }}/{{ getStringCount() }} strings</a></li>
-			<li><a>{{ getTransformCount() }} transformations</a></li>
-			<li class="login" data-ng-show="showTwitterLogin()"><a href="/twauth">Log in with Twitter</a></li>
-			<li><a><span class="label label-primary" ng-repeat="queryterm in getQueryAsArray()">{{queryterm}}<span></a></li>
+			<li class="dropdown">
+				<a role="button" class="dropdown-toggle">{{ sourceTitle }} <span class="caret"></span></a>		
+				<ul class="dropdown-menu">
+					<li 
+						data-ng-repeat="(slug,title) in dataSource.getSourceMenu()" 
+						>
+					<a data-ng-click="setSource(slug)">{{ title }}</a></li>
+				</ul>
+			</li>				
+			<li data-ng-show="isSourceSet()">
+				<a>{{ resultCount }}/{{ getStringCount() }} strings</a>
+			</li>
+			<li data-ng-show="isSourceSet()">
+				<a>{{ getTransformCount() }} transformations</a>
+			</li>
+			<li class="login" data-ng-show="showTwitterLogin()">
+				<a href="/twauth">Log in with Twitter</a>
+			</li>
+			<li data-ng-show="isSourceSet()">
+				<a><span class="label label-primary" ng-repeat="queryterm in getQueryAsArray()">{{queryterm}}<span></a>
+			</li>
 		</ul>
-		<ul class="nav navbar-nav navbar-right">
+		<ul class="nav navbar-nav navbar-right" data-ng-show="isSourceSet()">
 			<li><a>Buttons
 				<div class="btn-group">
 					<label class="btn btn-lg btn-default" data-ng-click="less()"
@@ -62,15 +94,15 @@ button.cloud {}
 		</ul>
 	</div>
 </nav>
-<div data-ng-controller="alertCtlr">
-	<alert ng-repeat="alert in getAlerts()" type="{{alert.type}}" close="closeAlert($index)">{{alert.message}}</alert>
+<div data-ng-controller="alertController">
+	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.message}}</alert>
 </div>
-<div class="tc" id="content">
+<div class="tc" id="content" data-ng-show="showCloud">
 	<!-- TODO Hide the UI until the user is logged into Twitter. -->
 	<!-- TODO Animate it. -->
 	<button class="cloud btn btn-default btn-xs" 
-		data-ng-controller="buttonCtlr"
-		data-ng-repeat="(word,wordspec) in getCloudData()" 
+		data-ng-controller="buttonController"
+		data-ng-repeat="(word,wordspec) in cloudData" 
 		data-ng-hide="hideThis"
 		data-ng-click="addQueryTerm(wordspec.queryTerm);filterContent();"
 		data-ng-style="countToStyle(wordspec.count)"

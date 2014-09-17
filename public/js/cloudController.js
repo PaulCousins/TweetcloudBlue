@@ -9,31 +9,34 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 	$scope.basescale        = 40; //TODO (searchObject) && (searchObject.scale) && (searchObject.scale is number)
 	$scope.stringThreshold  = 10; //TODO (searchObject) && (searchObject.st) && (searchObject.st is number)
 	
-	console.log(searchObject.source);
 	dataSourceService.setSource(searchObject.source);
 	$scope.dataSource = dataSourceService;
 	$scope.sourceTitle = dataSourceService.getCurrentTitle() || "Select Data Source";
-	$scope.setSource = function(slug) { dataSourceService.setSource(slug); }
-	
+	$scope.setSource = function(slug) { 
+		dataSourceService.setSource(slug); 
+		downloadCloud();
+	}
+		
 	// Get data from server. 
 	// Assumes data returned will already be cloudified.
 	function downloadCloud() {
+
+		$scope.cloudData = {};
 	
 		if (dataSourceService.isSourceSet()) {
 
 			cloudService.setHttp($http);
 			cloudService.setQuery($scope.getQueryAsString());
 			cloudService.setDataRoute(dataSourceService.getCurrentDataRoute());
-			cloudService.setRetrieveDataAlertFn(function() {
+			cloudService.setRetrieveDataAlertFn(function retrieveDataAlert() {
 				alertService.addAlert("info","Retrieving data."); 
 			});
-			cloudService.setDoneFn(function() {
+			cloudService.setDoneFn(function onDone() {
 				alertService.addAlert("info","Data retrieved; formatting data."); 
 				$scope.filterContent();
-				$scope.setInitialQuantityThreshold();
+				$scope.buildCloud();
 			});
-			console.log(cloudService.doneFn);
-			cloudService.setErrorFn(function(data) {
+			cloudService.setErrorFn(function onError(data) {
 				alertService.addAlert("danger","Failed to receive data from server."); 
 			});
 			
@@ -80,8 +83,13 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 		downloadCloud();
 	}
 	
-	$scope.setInitialQuantityThreshold = function() {
+	$scope.buildCloud = function() {
+		
+		$scope.showCloud = false;
+		$scope.cloudData = cloudService.getCloudData();
+
 		// Base on 75th percentile of values that are greater than 1.
+		// Assumes 
 		
 		aCounts = [];
 		cloudData = cloudService.getCloudData();
@@ -96,6 +104,9 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 		if (n>0) {
 			$scope.quantityThreshold = (aCounts[Math.floor(n*.75)]+aCounts[Math.ceil(n*.75)])/2;
 		}
+		
+		$scope.showCloud = true;
+		
 	}
 	
 	$scope.more = function() {
@@ -125,6 +136,9 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 	
 	$scope.filterContent = function() {
 		$scope.matches = angular.copy(cloudService.getContent());
+		if (!$scope.matches) {
+			throw "$scope.filterContent(): No data returned by cloudService.getContent() (shouldn't happen!)";
+		}
 		$scope.resultCount = $scope.matches.length;
 		$scope.showStrings = ($scope.resultCount <= $scope.stringThreshold);
 	}

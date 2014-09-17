@@ -1,100 +1,102 @@
 function CloudService() {
 
 	// Parameters
-	this.http = {};
-	this.query = '';
-	this.dataRoute = '';
-	this.retrieveDataAlertFn = angular.noop; // () Callback for retrieving data alert.
-	this.doneFn = angular.noop; // ()
-	this.errorFn = angular.noop; // (data) 
+	var
+		_http = {},
+		_query = '',
+		_dataRoute = '',
+		_retrieveDataAlertFn = angular.noop, // () Callback for retrieving data alert.
+		_doneFn = angular.noop, // ()
+		_errorFn = angular.noop; // (data) 
 	
-	this.cloudData = {};
+	var _cloudData = {};
 	
-}
+	function _setCloudData(data) {
+		if (!data) {
+			throw "CloudService._setCloudDataFn(): Null data!";
+		}
+		_cloudData = data;
+		_doneFn();
+	}
 
-CloudService.prototype.setCloudData = function(data) {
-	console.log('doneFn',this.doneFn);
-	this.cloudData = data;
-	this.doneFn();
-}
+	// Parameter setters.
 
-// Parameter setters.
+	this.setHttp = function(value) {
+		_http = value;
+	}
 
-CloudService.prototype.setHttp = function(value) {
-	this.http = value;
-}
+	this.setQuery = function(value) {
+		_query = value;
+	}
 
-CloudService.prototype.setQuery = function(value) {
-	this.query = value;
-}
+	this.setDataRoute = function(value) {
+		_dataRoute = value;
+	}
 
-CloudService.prototype.setDataRoute = function(value) {
-	this.dataRoute = value;
-}
+	this.setRetrieveDataAlertFn = function(fn) {
+		_retrieveDataAlertFn = fn || angular.noop;
+	}
 
-CloudService.prototype.setRetrieveDataAlertFn = function(fn) {
-	this.retrieveDataAlertFn = fn || angular.noop;
-}
+	this.setDoneFn = function(fn) {
+		_doneFn = fn || angular.noop;
+	}
 
-CloudService.prototype.setDoneFn = function(fn) {
-	this.doneFn = fn || angular.noop;
-}
+	this.setErrorFn = function(fn) {
+		_errorFn = fn || angular.noop;
+	}
 
-CloudService.prototype.setErrorFn = function(fn) {
-	this.errorFn = fn || angular.noop;
-}
+	// Download function.
 
-// Download function.
+	this.download = function() {
+		postData = {
+			'query': _query
+		};
+		_retrieveDataAlertFn();
+		_http
+			.post(_dataRoute,postData)
+			.success(_setCloudData)
+			.error(_errorFn);
+	}
 
-CloudService.prototype.download = function() {
-	console.log('doneFn',this.doneFn);
-	postData = {
-		'query': this.query
-	};
-	this.retrieveDataAlertFn();
-	this.http
-		.post(this.dataRoute,postData)
-		.success(this.setCloudData)
-		.error(this.errorFn);
-}
+	// Data retrieval functions.
 
-// Data retrieval functions.
+	this.getCloudData = function() {
+		if (!_cloudData) return null;
+		return _cloudData.cloud;
+	}
 
-CloudService.prototype.getCloudData = function() {
-	if (!this.cloudData) return null;
-	return this.cloudData.cloud;
-}
+	this.getContent = function() {
+		if (!_cloudData) return null;
+		return _cloudData.extract;
+	}
 
-CloudService.prototype.getContent = function() {
-	if (!this.cloudData) return null;
-	return this.cloudData.extract;
-}
+	// Total number of strings read by the data service.
+	this.getStringCount = function() {
+		if (!_cloudData) return 0;
+		if (!_cloudData.stringCount) return 0;
+		return _cloudData.stringCount;
+	}
 
-// Total number of strings read by the data service.
-CloudService.prototype.getStringCount = function() {
-	if (!this.cloudData) return 0;
-	if (!this.cloudData.stringCount) return 0;
-	return this.cloudData.stringCount;
-}
+	// Number of transforms read and applied by the data service.
+	this.getTransformCount = function() {
+		if (!_cloudData) return 0;
+		if (!_cloudData.transformCount) return 0;
+		return _cloudData.transformCount; 
+	}
 
-// Number of transforms read and applied by the data service.
-CloudService.prototype.getTransformCount = function() {
-	if (!this.cloudData) return 0;
-	if (!this.cloudData.transformCount) return 0;
-	return this.cloudData.transformCount; 
-}
+	// Total number of words counted by the data service.
+	this.getWordCount = function() {
+		if (!_cloudData) return 0;
+		if (!_cloudData.wordCount) return 0;
+		return _cloudData.wordCount;
+	}
 
-// Total number of words counted by the data service.
-CloudService.prototype.getWordCount = function() {
-	if (!this.cloudData) return 0;
-	if (!this.cloudData.wordCount) return 0;
-	return this.cloudData.wordCount;
-}
+	// An ordered list of words that are keys to the cloud.
+	this.getWords = function() {
+		if (!_cloudData) return null;
+		words = _cloudData.cloud.reduce(function(a,word) { a.push(word); }, {});
+		words.sort();
+		return words; 
+	}
 
-// An ordered list of words that are keys to the cloud.
-CloudService.prototype.getWords = function() {
-	if (!this.cloudData) return null;
-	words = this.cloudData.cloud.reduce(function(a,word) { a.push(word); }, {});
-	words.sort();
-	return words; 
 }

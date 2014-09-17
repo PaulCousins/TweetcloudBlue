@@ -1,5 +1,5 @@
 function AlertController ($scope,alertService) {
-	$scope.getAlerts =  alertService.getAlerts;
+	$scope.alerts =  alertService.alerts;
 	$scope.addAlert = alertService.addAlert;
 	$scope.closeAlert = alertService.closeAlert;
 }
