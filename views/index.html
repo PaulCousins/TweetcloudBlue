@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="/lib/angular.js" charset="utf-8"></script>
+<script src="/lib/angular-animate.js" charset="utf-8"></script>
 <script src="/lib/ui-bootstrap-tpls-0.11.0.js" charset="utf-8"></script>
 <script src="/js/alertController.js" charset="utf-8"></script>
 <script src="/js/alertService.js" charset="utf-8"></script>
@@ -13,7 +14,7 @@
 	app.service('alertService', AlertService);
 	app.service('cloudService', CloudService);
 	app.service('dataSourceService', DataSourceService);
-	app.controller('alertController', ['$scope','alertService',AlertController]);
+	app.controller('alertController', ['$scope','$animate','alertService',AlertController]);
 	app.controller('buttonController', ButtonController);
 	app.controller('cloudController', 
 		['$scope','$http','$location',
@@ -25,6 +26,34 @@
 <style>
 button.cloud {}
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+.animate-enter, 
+.animate-leave
+{ 
+    -webkit-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -moz-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -ms-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -o-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space:nowrap;
+} 
+ 
+.animate-leave.animate-leave-active,
+.animate-enter {
+    opacity: 0;
+    width: 0px;
+    height: 0px;
+}
+ 
+.animate-enter.animate-enter-active, 
+.animate-leave {
+    opacity: 1;
+    width: 100%;
+    height: 30px;
+}
 </style>
 </head>
 
@@ -92,7 +121,10 @@ button.cloud {}
 	</div>
 </nav>
 <div data-ng-controller="alertController">
-	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.message}}</alert>
+	<alert 
+		ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)"
+		ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
+	>{{alert.message}}</alert>
 </div>
 <div class="tc" id="content" data-ng-show="showCloud">
 	<!-- TODO Hide the UI until the user is logged into Twitter. -->
