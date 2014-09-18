@@ -35,7 +35,6 @@ module.exports = function(parameters) {
 		// Massage the content to remove common artefacts.
 		extract = extract
 			.toLowerCase()
-			.replace(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/g,' ') // remove URLs
 			.replace(/&amp;apos;/,'\'')
 			.replace(/n\'t\b/g,' ')
 			.replace(/\'s\b/g,' ')

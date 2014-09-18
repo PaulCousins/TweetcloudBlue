@@ -1,23 +1,28 @@
 <html>
 <head>
+<!-- Libraries and APIs -->
 <script src="/lib/angular.js" charset="utf-8"></script>
 <script src="/lib/ui-bootstrap-tpls-0.11.0.js" charset="utf-8"></script>
+<script src="http://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<!-- Files for this application -->
 <script src="/js/alertController.js" charset="utf-8"></script>
 <script src="/js/alertService.js" charset="utf-8"></script>
 <script src="/js/buttonController.js" charset="utf-8"></script>
 <script src="/js/cloudController.js" charset="utf-8"></script>
 <script src="/js/cloudService.js" charset="utf-8"></script>
 <script src="/js/dataSourceService.js" charset="utf-8"></script>
+<script src="/js/twitterService.js" charset="utf-8"></script>
 <script>
 	var app = angular.module('tweetcloud', ['ui.bootstrap']);
 	app.service('alertService', AlertService);
 	app.service('cloudService', CloudService);
 	app.service('dataSourceService', DataSourceService);
+	app.service('twitterService', TwitterService);
 	app.controller('alertController', ['$scope','alertService',AlertController]);
 	app.controller('buttonController', ButtonController);
 	app.controller('cloudController', 
 		['$scope','$http','$location',
-		'alertService','cloudService','dataSourceService',
+		'alertService','cloudService','dataSourceService','twitterService',
 		CloudController]);
 </script>
 
@@ -47,7 +52,7 @@ button.cloud {}
 			<li data-ng-show="dataSource.isSourceSet()">
 				<a>{{ transformCount }} transformations</a>
 			</li>
-			<li class="login" data-ng-show="showTwitterLogin()">
+			<li class="login" data-ng-show="sourceTwitter()">
 				<a href="/twauth">Log in with Twitter</a>
 			</li>
 			<li data-ng-show="dataSource.isSourceSet()">
@@ -73,7 +78,7 @@ button.cloud {}
 							tooltip-placement="bottom" tooltip="Make cloud buttons bigger.">
 						<img src="/glyphicons/png/glyphicons_116_text_bigger.png" />
 					</label>
-					<label class="btn btn-lg btn-default" data-ng-click="showStrings = !showStrings"
+					<label class="btn btn-lg btn-default" data-ng-click="toggleShowStrings()"
 							tooltip-placement="bottom" tooltip="Toggle display of matching strings.">
 						<img src="/glyphicons/png/glyphicons_158_show_lines.png" />
 					</label>
@@ -105,7 +110,16 @@ button.cloud {}
 		data-ng-style="countToStyle(wordspec.count)"
 		tooltip-placement="bottom" tooltip="{{ wordspec.count }} instances"
 		>{{ word }}</button>
-	<ul collapse="!showStrings"><li data-ng-repeat="matchedString in matches">{{matchedString}}</li></ul>
+	<ul data-ng-hide="sourceTwitter()" collapse="!showStrings">
+		<li data-ng-repeat="matchedString in matches">{{matchedString}}</li>
+	</ul>
+	<ul data-ng-show="sourceTwitter()" collapse="!showStrings">
+		<li data-ng-repeat="tweet in matches">
+			{{ tweet.text }} 
+			<i>{{ tweet.user.name }}</i>
+			<a href="{{ tweetUrl(tweet) }}">{{ formatDateFromTwitter(tweet.created_at) }}</a>
+		</li>
+	</ul>
 </div>
 </body>
 </html>

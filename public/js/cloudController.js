@@ -1,4 +1,7 @@
-function CloudController($scope,$http,$location,alertService,cloudService,dataSourceService) {
+function CloudController(
+	$scope,$http,$location,
+	alertService,cloudService,dataSourceService,twitterService
+) {
 		
 	var searchObject = $location.search();
 		// Valid query parameters (all optional)
@@ -50,6 +53,7 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 	} 
 
 	$scope.showStrings = false;
+	$scope.toggleShowStrings = function(){ $scope.showStrings = !$scope.showStrings; };
 	
 	// Filter query.
 	
@@ -145,10 +149,12 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 		$scope.showStrings = ($scope.resultCount <= $scope.stringThreshold);
 	}
 
-	$scope.showTwitterLogin = function() {
+	$scope.sourceTwitter = function() {
 		return dataSourceService.isCurrentSource("twitter"); //TODO and not already logged in.
 	}
-
+	$scope.formatDateFromTwitter = twitterService.formatDateFromTwitter;
+	$scope.tweetUrl = twitterService.tweetUrl;
+	
 	$scope.initialize(); // do this by default
 
 }
