@@ -41,20 +41,20 @@ button.cloud {}
 					<a data-ng-click="setSource(slug)">{{ title }}</a></li>
 				</ul>
 			</li>				
-			<li data-ng-show="isSourceSet()">
+			<li data-ng-show="dataSource.isSourceSet()">
 				<a>{{ resultCount }}/{{ getStringCount() }} strings</a>
 			</li>
-			<li data-ng-show="isSourceSet()">
+			<li data-ng-show="dataSource.isSourceSet()">
 				<a>{{ getTransformCount() }} transformations</a>
 			</li>
 			<li class="login" data-ng-show="showTwitterLogin()">
 				<a href="/twauth">Log in with Twitter</a>
 			</li>
-			<li data-ng-show="isSourceSet()">
+			<li data-ng-show="dataSource.isSourceSet()">
 				<a><span class="label label-primary" ng-repeat="queryterm in getQueryAsArray()">{{queryterm}}<span></a>
 			</li>
 		</ul>
-		<ul class="nav navbar-nav navbar-right" data-ng-show="isSourceSet()">
+		<ul class="nav navbar-nav navbar-right" data-ng-show="dataSource.isSourceSet()">
 			<li><a>Buttons
 				<div class="btn-group">
 					<label class="btn btn-lg btn-default" data-ng-click="less()"
