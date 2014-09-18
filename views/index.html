@@ -42,10 +42,10 @@ button.cloud {}
 				</ul>
 			</li>				
 			<li data-ng-show="dataSource.isSourceSet()">
-				<a>{{ resultCount }}/{{ getStringCount() }} strings</a>
+				<a>{{ resultCount }}/{{ stringCount }} strings</a>
 			</li>
 			<li data-ng-show="dataSource.isSourceSet()">
-				<a>{{ getTransformCount() }} transformations</a>
+				<a>{{ transformCount }} transformations</a>
 			</li>
 			<li class="login" data-ng-show="showTwitterLogin()">
 				<a href="/twauth">Log in with Twitter</a>
@@ -55,7 +55,7 @@ button.cloud {}
 			</li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right" data-ng-show="dataSource.isSourceSet()">
-			<li><a>Buttons
+			<li>
 				<div class="btn-group">
 					<label class="btn btn-lg btn-default" data-ng-click="less()"
 							tooltip-placement="bottom" tooltip="Show fewer cloud buttons.">
@@ -73,23 +73,20 @@ button.cloud {}
 							tooltip-placement="bottom" tooltip="Make cloud buttons bigger.">
 						<img src="/glyphicons/png/glyphicons_116_text_bigger.png" />
 					</label>
-				</div></a>
-			</li>
-			<li><a>Content
-				<div class="btn-group">
 					<label class="btn btn-lg btn-default" data-ng-click="showStrings = !showStrings"
-							tooltip-placement="bottom" tooltip="Toggle display of matching Strings.">
+							tooltip-placement="bottom" tooltip="Toggle display of matching strings.">
 						<img src="/glyphicons/png/glyphicons_158_show_lines.png" />
 					</label>
+					<!-- TODO: Load more content when appropriate; hide when not. -->
 					<label class="btn btn-lg btn-default" data-ng-click="initialize();"
-							tooltip-placement="bottom" tooltip="Refresh content.">
+							tooltip-placement="bottom" tooltip="Load more content.">
 						<img src="/glyphicons/png/glyphicons_081_refresh.png" />
 					</label> <!-- Currently doesn't work because content is constant -->
-					<label class="btn btn-lg btn-default" data-ng-click="initialize()"
-							tooltip-placement="bottom" tooltip="Revert content.">
+					<label class="btn btn-lg btn-default" data-ng-click="resetQuery()"
+							tooltip-placement="bottom" tooltip="Clear query.">
 						<img src="/glyphicons/png/glyphicons_435_undo.png" />
 					</label>
-				</div></a>
+				</div>
 			</li>
 		</ul>
 	</div>

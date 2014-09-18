@@ -9,9 +9,8 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 	$scope.basescale        = 40; //TODO (searchObject) && (searchObject.scale) && (searchObject.scale is number)
 	$scope.stringThreshold  = 10; //TODO (searchObject) && (searchObject.st) && (searchObject.st is number)
 	
-	dataSourceService.setSource(searchObject.source);
 	$scope.dataSource = dataSourceService;
-	$scope.sourceTitle = dataSourceService.getCurrentTitle() || "Select Data Source";
+	
 	$scope.setSource = function(slug) { 
 		dataSourceService.setSource(slug); 
 		downloadCloud();
@@ -22,6 +21,7 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 	function downloadCloud() {
 
 		$scope.cloudData = {};
+		$scope.sourceTitle = dataSourceService.getCurrentTitle() || "Select Data Source";
 	
 		if (dataSourceService.isSourceSet()) {
 
@@ -35,6 +35,8 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 				alertService.addAlert("info","Data retrieved; formatting data."); 
 				$scope.filterContent();
 				$scope.buildCloud();
+				$scope.stringCount = cloudService.getStringCount();
+				$scope.transformCount = cloudService.getTransformCount();
 			});
 			cloudService.setErrorFn(function onError(data) {
 				alertService.addAlert("danger","Failed to receive data from server."); 
@@ -80,7 +82,7 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 	$scope.initialize = function()
 	{
 		$scope.words = [];
-		downloadCloud();
+		$scope.setSource(dataSourceService.setSource());
 	}
 	
 	$scope.buildCloud = function() {
