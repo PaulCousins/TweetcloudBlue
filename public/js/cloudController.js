@@ -44,8 +44,6 @@ function CloudController($scope,$http,$location,alertService,cloudService,dataSo
 			
 			cloudService.download();
 
-		} else {
-			alertService.addAlert("warning","No data source selected.");
 		}
 	} 
 
