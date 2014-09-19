@@ -14,7 +14,7 @@ exports.twitter = function(req, res){
 
 	queryString = req.param("query");
 
-	Twitter.search(queryString, { count: 100 }, function(data) {
+	Twitter.search(queryString+" exclude:retweets", { count: 100 }, function(data) {
 		parameters = {
 			data: data.statuses,
 			textExtractFn: function(s) { return s.text; },
