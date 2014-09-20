@@ -1,6 +1,6 @@
 function CloudController(
 	$scope,$http,$location,
-	alertService,cloudService,dataSourceService,twitterService
+	alertService,cloudService,dataSourceService,navigationService,twitterService
 ) {
 		
 	var searchObject = $location.search();
@@ -13,6 +13,7 @@ function CloudController(
 	$scope.stringThreshold  = 10; //TODO (searchObject) && (searchObject.st) && (searchObject.st is number)
 	
 	$scope.dataSource = dataSourceService;
+	$scope.navigation = navigationService;
 	
 	$scope.setSource = function(slug) { 
 		dataSourceService.setSource(slug); 

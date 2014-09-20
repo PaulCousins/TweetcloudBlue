@@ -5,6 +5,7 @@
 <script src="/lib/angular-animate.js" charset="utf-8"></script>
 <script src="/lib/ui-bootstrap-tpls-0.11.0.js" charset="utf-8"></script>
 <script src="http://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <!-- Files for this application -->
 <script src="/js/alertController.js" charset="utf-8"></script>
 <script src="/js/alertService.js" charset="utf-8"></script>
@@ -12,18 +13,20 @@
 <script src="/js/cloudController.js" charset="utf-8"></script>
 <script src="/js/cloudService.js" charset="utf-8"></script>
 <script src="/js/dataSourceService.js" charset="utf-8"></script>
+<script src="/js/navigationService.js" charset="utf-8"></script>
 <script src="/js/twitterService.js" charset="utf-8"></script>
 <script>
 	var app = angular.module('tweetcloud', ['ui.bootstrap']);
 	app.service('alertService', AlertService);
 	app.service('cloudService', CloudService);
 	app.service('dataSourceService', DataSourceService);
+	app.service('navigationService', NavigationService);
 	app.service('twitterService', TwitterService);
 	app.controller('alertController', ['$scope','$animate','alertService',AlertController]);
 	app.controller('buttonController', ButtonController);
 	app.controller('cloudController', 
 		['$scope','$http','$location',
-		'alertService','cloudService','dataSourceService','twitterService',
+		'alertService','cloudService','dataSourceService','navigationService','twitterService',
 		CloudController]);
 </script>
 
@@ -90,37 +93,15 @@ button.cloud {}
 		</ul>
 		<ul class="nav navbar-nav navbar-right" data-ng-show="dataSource.isSourceSet()">
 			<li>
-				<div class="btn-group">
-					<label class="btn btn-lg btn-default" data-ng-click="less()"
-							tooltip-placement="bottom" tooltip="Show fewer cloud buttons.">
-						<img src="/glyphicons/png/glyphicons_433_minus.png" />
-					</label>
-					<label class="btn btn-lg btn-default" data-ng-click="more()"
-							tooltip-placement="bottom" tooltip="Show more cloud buttons.">
-						<img src="/glyphicons/png/glyphicons_432_plus.png" />
-					</label>
-					<label class="btn btn-lg btn-default" data-ng-click="smaller()"
-							tooltip-placement="bottom" tooltip="Make cloud buttons smaller.">
-						<img src="/glyphicons/png/glyphicons_115_text_smaller.png" />
-					</label>
-					<label class="btn btn-lg btn-default" data-ng-click="bigger()"
-							tooltip-placement="bottom" tooltip="Make cloud buttons bigger.">
-						<img src="/glyphicons/png/glyphicons_116_text_bigger.png" />
-					</label>
-					<label class="btn btn-lg btn-default" data-ng-click="toggleShowStrings()"
-							tooltip-placement="bottom" tooltip="Toggle display of matching strings.">
-						<img src="/glyphicons/png/glyphicons_158_show_lines.png" />
-					</label>
-					<!-- TODO: Load more content when appropriate; hide when not. -->
-					<label class="btn btn-lg btn-default" data-ng-click="initialize();"
-							tooltip-placement="bottom" tooltip="Load more content.">
-						<img src="/glyphicons/png/glyphicons_081_refresh.png" />
-					</label> <!-- Currently doesn't work because content is constant -->
-					<label class="btn btn-lg btn-default" data-ng-click="resetQuery()"
-							tooltip-placement="bottom" tooltip="Clear query.">
-						<img src="/glyphicons/png/glyphicons_435_undo.png" />
-					</label>
-				</div>
+				<ul class="btn-group">
+					<li 
+						data-ng-repeat="btn in navigation.buttonBar" 
+						data-ng-click="{{ btn[1] }}"
+						class="btn btn-default" style="font-size: 30px; vertical-align: middle;"
+						tooltip-placement="bottom" tooltip="{{ btn[2] }}"
+					><i class="fa {{ btn[0] }}"></i>
+					</li>
+				</ul>
 			</li>
 		</ul>
 	</div>
