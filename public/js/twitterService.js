@@ -25,5 +25,4 @@ function TwitterService() {
 	this.tweetUrl = function(tw){ 
 		return "https://twitter.com/"+tw.user.screen_name+"/status/"+tw.str_id; 
 	}
-	
 }

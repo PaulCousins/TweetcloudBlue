@@ -121,14 +121,14 @@ button.cloud {}
 		data-ng-style="countToStyle(wordspec.count)"
 		tooltip-placement="bottom" tooltip="{{ wordspec.count }} instances"
 		>{{ word }}</button>
-	<ul data-ng-hide="sourceTwitter()" collapse="!showStrings">
-		<li data-ng-repeat="matchedString in matches">{{matchedString}}</li>
-	</ul>
-	<ul data-ng-show="sourceTwitter()" collapse="!showStrings">
-		<li data-ng-repeat="tweet in matches">
-			{{ tweet.text }} 
-			<i>{{ tweet.user.name }}</i>
-			<a href="{{ tweetUrl(tweet) }}">{{ formatDateFromTwitter(tweet.created_at) }}</a>
+	<ul collapse="!showStrings">
+		<li data-ng-repeat="oMatch in matches" data-ng-switch="source">
+			<span data-ng-switch-when="twitter">
+				{{ oMatch.text }} 
+				<i>{{ oMatch.user.name }}</i>
+				<a href="{{ twitterService.tweetUrl(oMatch) }}">{{ twitterService.formatDateFromTwitter(oMatch.created_at) }}</a>
+			</span>
+			<span data-ng-switch-default>{{oMatch}}</span><!-- assume string -->
 		</li>
 	</ul>
 </div>

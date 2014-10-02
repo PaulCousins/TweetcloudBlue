@@ -6,10 +6,14 @@ function DataSourceService() {
 	};
 	
 	var _currentSourceSlug = null;
-
-	this.setSource = function(slug) {
-		if (slug && (!_sources[slug])) throw "setSource(): Invalid slug '"+slug+"'.";
-		_currentSourceSlug = slug;
+	
+	this.source = function(slug) {
+		if (slug) {
+			if (!_sources[slug]) throw "source(): Invalid slug '"+slug+"'.";
+			_currentSourceSlug = slug;
+		} else {
+			return _currentSourceSlug;
+		}
 	}
 	
 	this.getSourceMenu = function() {

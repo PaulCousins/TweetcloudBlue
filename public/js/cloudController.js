@@ -16,7 +16,8 @@ function CloudController(
 	$scope.navigation = navigationService;
 	
 	$scope.setSource = function(slug) { 
-		dataSourceService.setSource(slug); 
+		$scope.source = slug;
+		dataSourceService.source(slug); 
 		downloadCloud();
 	}
 		
@@ -52,7 +53,9 @@ function CloudController(
 	} 
 
 	$scope.showStrings = false;
-	$scope.toggleShowStrings = function(){ $scope.showStrings = !$scope.showStrings; };
+	$scope.toggleShowStrings = function(){ 
+		$scope.showStrings = !$scope.showStrings; 
+	};
 	
 	// Filter query.
 	
@@ -85,7 +88,6 @@ function CloudController(
 	$scope.initialize = function()
 	{
 		$scope.words = [];
-		$scope.setSource(dataSourceService.setSource());
 	}
 	
 	$scope.buildCloud = function() {
@@ -156,8 +158,7 @@ function CloudController(
 	$scope.sourceTwitter = function() {
 		return dataSourceService.isCurrentSource("twitter"); //TODO and not already logged in.
 	}
-	$scope.formatDateFromTwitter = twitterService.formatDateFromTwitter;
-	$scope.tweetUrl = twitterService.tweetUrl;
+	$scope.twitterService = twitterService;
 	
 	$scope.initialize(); // do this by default
 
