@@ -12,17 +12,17 @@ function TwitterService() {
 		
 		return ""+
 		 day_diff == 0 && (
-		 diff < 60 && "just now" ||
-		 diff < 120 && "1 minute ago" ||
-		 diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
-		 diff < 7200 && "1 hour ago" ||
-		 diff < 86400 && Math.floor( diff / 3600 ) + " hours ago"
+		 diff < 60 && "<1m" ||
+		 diff < 120 && "1m" ||
+		 diff < 3600 && Math.floor( diff / 60 ) + "m" ||
+		 diff < 7200 && "1h" ||
+		 diff < 86400 && Math.floor( diff / 3600 ) + "h"
 		 ) ||
 		 day_diff == 1 && "yesterday" ||
-		 day_diff + " days ago";
+		 day_diff + "d";
 	}
 
 	this.tweetUrl = function(tw){ 
-		return "https://twitter.com/"+tw.user.screen_name+"/status/"+tw.str_id; 
+		return "https://twitter.com/"+tw.user.screen_name+"/status/"+tw.id_str; 
 	}
 }
