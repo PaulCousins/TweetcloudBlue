@@ -126,7 +126,7 @@ button.cloud {}
 		<li data-ng-repeat="oMatch in matches" data-ng-switch="source">
 			<span data-ng-switch-when="twitter">
 				<span ng-bind-html="oMatch.text | linky"></span> 
-				<i>{{ oMatch.user.name }}</i>
+				<a href="{{ twitterService.tweeterUrl(oMatch) }}" class="label label-info">{{ oMatch.user.name }}</a>
 				<a href="{{ twitterService.tweetUrl(oMatch) }}" class="label label-info">{{ twitterService.formatDateFromTwitter(oMatch.created_at) }}</a>
 			</span>
 			<span data-ng-switch-default ng-bind-html="oMatch | linky"></span><!-- assume string -->
