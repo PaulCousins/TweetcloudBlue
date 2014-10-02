@@ -1,5 +1,5 @@
 function CloudController(
-	$scope,$http,$location,
+	$scope,$http,$location,$parse,
 	alertService,cloudService,dataSourceService,navigationService,twitterService
 ) {
 		
@@ -113,6 +113,11 @@ function CloudController(
 		$scope.showCloud = true;
 		
 	}
+	
+    // Handler to ngClick passing expression which is function name you have in your model
+    $scope.callFunction = function(exp){
+       $parse(exp)($scope); //Parse the function name to get the expression and invoke it on the scope.
+    }
 	
 	$scope.more = function() {
 		$scope.quantityThreshold /= 1.5;

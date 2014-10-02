@@ -25,7 +25,7 @@
 	app.controller('alertController', ['$scope','$animate','alertService',AlertController]);
 	app.controller('buttonController', ButtonController);
 	app.controller('cloudController', 
-		['$scope','$http','$location',
+		['$scope','$http','$location','$parse',
 		'alertService','cloudService','dataSourceService','navigationService','twitterService',
 		CloudController]);
 </script>
@@ -67,7 +67,6 @@ button.cloud {}
 
 <body data-ng-app="tweetcloud" data-ng-controller="cloudController">
 <nav role="navigation" class="navbar navbar-default">
-	<div class="navbar-header">
 		<ul class="nav navbar-nav">
 			<li class="dropdown">
 				<a role="button" class="dropdown-toggle">{{ sourceTitle }} <span class="caret"></span></a>		
@@ -96,7 +95,7 @@ button.cloud {}
 				<ul class="btn-group">
 					<li 
 						data-ng-repeat="btn in navigation.buttonBar" 
-						data-ng-click="{{ btn[1] }}"
+						data-ng-click="callFunction(btn[1])"
 						class="btn btn-default" style="font-size: 30px; vertical-align: middle;"
 						tooltip-placement="bottom" tooltip="{{ btn[2] }}"
 					><i class="fa {{ btn[0] }}"></i>
@@ -104,7 +103,6 @@ button.cloud {}
 				</ul>
 			</li>
 		</ul>
-	</div>
 </nav>
 <div data-ng-controller="alertController">
 	<alert 
