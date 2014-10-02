@@ -5,7 +5,6 @@ function CloudController(
 		
 	var searchObject = $location.search();
 		// Valid query parameters (all optional)
-		//TODO query
 		//TODO scale: initial base scale
 		//TODO st: string threshold
 
@@ -88,6 +87,11 @@ function CloudController(
 	$scope.initialize = function()
 	{
 		$scope.words = [];
+		if ($location.search()) {
+			if ($location.search().source) {
+				$scope.setSource($location.search().source);
+			}
+		}
 	}
 	
 	$scope.buildCloud = function() {
