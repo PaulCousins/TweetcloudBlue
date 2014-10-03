@@ -33,16 +33,17 @@ function CloudController(
 			cloudService.setQuery($scope.getQueryAsString());
 			cloudService.setDataRoute(dataSourceService.getCurrentDataRoute());
 			cloudService.setRetrieveDataAlertFn(function retrieveDataAlert() {
-				alertService.addAlert("info","Retrieving data."); 
+				$scope.showSpinner = true;
 			});
 			cloudService.setDoneFn(function onDone() {
-				alertService.addAlert("info","Data retrieved; formatting data."); 
 				$scope.filterContent();
 				$scope.buildCloud();
 				$scope.stringCount = cloudService.getStringCount();
 				$scope.transformCount = cloudService.getTransformCount();
+				$scope.showSpinner = false;
 			});
 			cloudService.setErrorFn(function onError(data) {
+				$scope.showSpinner = false;
 				alertService.addAlert("danger","Failed to receive data from server."); 
 			});
 			

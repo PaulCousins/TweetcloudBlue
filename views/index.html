@@ -79,14 +79,15 @@ button.cloud {}
 				</ul>
 			</li>				
 			<li data-ng-show="dataSource.isSourceSet()">
-				<a>{{ resultCount }}/{{ stringCount }} strings</a>
+				<a tooltip-placement="bottom" tooltip="Items Selected/Loaded">{{ resultCount }}/{{ stringCount }} <i class="fa fa-bars"></i></a>
 			</li>
 			<li data-ng-show="dataSource.isSourceSet()">
-				<a>{{ transformCount }} transformations</a>
+				<a tooltip-placement="bottom" tooltip="Transformations">{{ transformCount }} <i class="fa fa-cogs"></i></a>
 			</li>
 			<li class="login" data-ng-show="sourceTwitter()">
 				<a href="/twauth">Log in with Twitter</a>
 			</li>
+			<li data-ng-show="showSpinner"><a><i class="fa fa-refresh fa-spin"></i></a></li>
 			<li data-ng-show="dataSource.isSourceSet()">
 				<a><span class="label label-primary" ng-repeat="queryterm in getQueryAsArray()">{{queryterm}}<span></a>
 			</li>
