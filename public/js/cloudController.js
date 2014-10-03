@@ -58,6 +58,8 @@ function CloudController(
 	
 	// Filter query.
 	
+	//? $scope.query = $scope.getQueryAsArray();
+	
 	$scope.getQueryAsString = function() {
 		if ($location.search()) {
 			return $location.search().q;
@@ -73,12 +75,15 @@ function CloudController(
 	}
 
 	$scope.addQueryTerm = function(term) {
-		$location.search().q += " "+term;
+		existing = $scope.getQueryAsString();
+		$location.search('q', existing ? existing+" "+term : term);
 		downloadCloud();
 	}
 	
+	//TODO $scope.removeQueryTerm
+	
 	$scope.resetQuery = function() {
-		$location.search().q = '';
+		$location.search('q','');
 		downloadCloud();
 	}
 	
