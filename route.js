@@ -10,25 +10,22 @@ exports.index = function(req, res) {
 	
 exports.twitter = function(req, res){
 
-	//TODO lang: 'en'
-
 	queryString = req.param("query");
-	
-	if (queryString) {
-		Twitter.search(queryString+" exclude:retweets", { count: 100 }, function(data) {
-			parameters = {
-				data: data.statuses,
-				textExtractFn: function(s) { return s.text; },
-				idExtractFn: function(s) { return s.id; }
-			};
-			cloudified = Cloudify(parameters);
-			cloudified.data = data.statuses;
-			res.json(cloudified);
-		});
-	} else {
-		//TODO Come up with some sort of default condition, or otherwise return nothing.
-		res.json({});
+	if (!queryString) {
+		queryString = "from:breakingnews";
 	}
+	
+	//TODO lang: 'en', result_type: 'popular'
+	Twitter.search(queryString+" exclude:retweets", { count: 100 }, function(data) {
+		parameters = {
+			data: data.statuses,
+			textExtractFn: function(s) { return s.text; },
+			idExtractFn: function(s) { return s.id; }
+		};
+		cloudified = Cloudify(parameters);
+		cloudified.data = data.statuses;
+		res.json(cloudified);
+	});
 }
 
 exports.loremipsum = function(req, res){

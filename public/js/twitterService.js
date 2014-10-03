@@ -1,7 +1,6 @@
 function TwitterService() {
 
 	// Twitter returns the date as WWW MMM DD HH:MM:SS +ZZZZ YYYY.
-	
 	this.formatDateFromTwitter = function(s)
 	{
 		var aPieces = s.split(" ");
