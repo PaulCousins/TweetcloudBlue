@@ -68,14 +68,24 @@ button.cloud {}
 
 <body data-ng-app="tweetcloud" data-ng-controller="cloudController">
 <nav role="navigation" class="navbar navbar-default">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <!-- Collection of nav links and other content for toggling -->
+    <div id="navbarCollapse" class="collapse navbar-collapse">
 		<ul class="nav navbar-nav">
 			<li class="dropdown">
 				<a role="button" class="dropdown-toggle">{{ sourceTitle }} <span class="caret"></span></a>		
 				<ul class="dropdown-menu">
-					<li 
-						data-ng-repeat="(slug,title) in dataSource.getSourceMenu()" 
-						>
-					<a data-ng-click="setSource(slug)">{{ title }}</a></li>
+					<li data-ng-repeat="(slug,title) in dataSource.getSourceMenu()">
+						<a data-ng-click="setSource(slug)">{{ title }}</a>
+					</li>
 				</ul>
 			</li>				
 			<li data-ng-show="dataSource.isSourceSet()">
@@ -105,6 +115,7 @@ button.cloud {}
 				</ul>
 			</li>
 		</ul>
+	</div>
 </nav>
 <div data-ng-controller="alertController">
 	<alert 
