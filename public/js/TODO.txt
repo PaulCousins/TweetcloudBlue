@@ -1,13 +1,20 @@
 TODO
-* Make a service (directive?) for each content source. Use the content controller to display 
-content from that source
 * Twitter mode needs some sort of query seeder.
 * Click on query button in nav bar removes the search term.
 * Refresh content: Load more tweets (Twitter only). Perhaps hide this button if not available?
-* Refactor navigation control out to a separate controller navigationController?
+* Twitter: Linkify hashtags, @x.
+* Entry field to manually inject search term.
+* Meta-topics akin to rttopics "tag" category.
+* Spinner.
+
+	app.filter('massage', function() {
+		return function(value) {
+			hashtags = 
+
+			
+			
 
 
 
 
 
-data-ng-show="dataSource.isCurrentSource(slug)"

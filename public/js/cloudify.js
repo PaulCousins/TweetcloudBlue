@@ -37,7 +37,7 @@ module.exports = function(parameters) {
 			.toLowerCase()
 			.replace(/&amp;apos;/,'\'')
 			.replace(/n\'t\b/g,' ')
-			.replace(/\'s\b/g,' ')
+			.replace(/\'(s|m|ll|ve|d)\b/g,' ')
 			.replace(/s\'\b/g,' ')
 			.replace(/[.,\/;:]/g,' ') // replace certain punctuation with spaces
 			.replace(/\b\w\w?\b/g,' ') // remove 1- and 2- letter words
